@@ -16,7 +16,7 @@ const url = '<parse property="foo" />';
         <parse baz="hey" </parse>
     </div>
     <div>
-        <parse baz="hey" </parse>
+        <parse baz="hoy" </parse>
     </div>
 </parse>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,7 +34,7 @@ const url = '<parse property="foo" />';
 
 let text_copy = text.slice()
 
-// Array di tag al cui interno non bisogna cercare
+// Array of invalid tags where inside parse tags will not be valid
 const notAllowed = ['<script', '<style', '<!-- ']
 const notAllowedEnd = ['</script>', '</style>', '-->']
 const matchTag = "<parse"
@@ -52,7 +52,7 @@ let notValidIndexes = []
 
 // This function find not allowed tags and populate the notValid array with the complete tag substring
 function findNotAllowed(text, startingTag, endingTag) {
-    // contatori per inizio e fine substring
+    // counters for delimiting start and end of the not valid interval
     let start = 0
     let end = 0
     if (text.indexOf(startingTag) !== -1) {
@@ -103,8 +103,9 @@ function findCloseTag(text, matchEndTag, start = 0) {
     return false
 }
 
-// Function to check if parse tags are not included in not allowed tags 
-function validateTags(indexes, intervals) {
+// Function to check if parse tags indexes are included in not allowed intervals
+// will return only valid indexes  
+function validateParseIndexes(indexes, intervals) {
     let notValids = []
     for (let i in indexes) {
         for (let y in intervals) {
@@ -139,17 +140,31 @@ function matchPairs(validIndexes, validClosingIndexes) {
 
 // This function gets rid of parse tags nested inside other parse tags
 function removeChildren(pairParse) {
-    const validPairParse = []
+    const validParsePairs = []
     for (let i = 0; i < pairParse.length - 1; i++) {
         console.log(pairParse[i + 1])
         if (pairParse[i][0] < pairParse[i + 1][0]) {
-            validPairParse.push(pairParse[i])
+            validParsePairs.push(pairParse[i])
         }
     }
-    validPairParse.push(pairParse[pairParse.length - 1])
-    return validPairParse
+    validParsePairs.push(pairParse[pairParse.length - 1])
+    return validParsePairs
 }
 
+// this function will search for parsetag intervals in text and return an array of strings of parse tags
+function parseStringMaker(text, parseIntervals) {
+    let parseStrings = []
+    parseIntervals.forEach(elem => parseStrings.push(text.substring(elem[0], elem[1])))
+    return parseStrings
+}
+
+// function to extract valid properties from parseStrings, will return an array of objects
+// with property names as keys and prop values as values
+function extractProperties(parseStrings) {
+    propertiesArr = []
+    // TODO: the following part is incomplete
+    parseStrings.forEach(str => propertiesArr.push(str))
+}
 
 function main() {
     for (let i = 0; i < notAllowed.length; i++) {
@@ -158,23 +173,25 @@ function main() {
     findNotAllowedIndexes(text, notValid)
     findParseTag(text, matchTag)
     findCloseTag(text, matchEndTag)
-    let validIndexes = validateTags(indexes = parseStack, intervals = notValidIndexes)
-    console.log(`Valid Indexes: ${validIndexes}`)
-    let validClosingIndexes = validateTags(indexes = endParseStack, intervals = notValidIndexes)
-    console.log(`Valid Closing Indexes: ${validClosingIndexes}`)
+    let validIndexes = validateParseIndexes(indexes = parseStack, intervals = notValidIndexes)
+    console.log("Valid parse tags starting indexes: ", validIndexes)
+    let validClosingIndexes = validateParseIndexes(indexes = endParseStack, intervals = notValidIndexes)
+    console.log("Valid parse tags closing indexes: ", validClosingIndexes)
     const pairParse = matchPairs(validIndexes, validClosingIndexes)
-    const validPairParse = removeChildren(pairParse)
+    const validParsePairs = removeChildren(pairParse)
     console.log(pairParse)
-    console.log(validPairParse)
+    console.log("Valid parent parse tags intervals:", validParsePairs)
+    const parseStrings = parseStringMaker(text, validParsePairs)
+    console.log(parseStrings)
 }
 
 
 main()
-console.log(`Invalid Indexes: ${notValidIndexes}`)
-console.log(`Starting parseTag indexes: ${parseStack}`)
-console.log(`parseTag ending indexes: ${endParseStack}`)
+console.log("Invalid intervals where we shouldn't search: ", notValidIndexes)
+// console.log("All starting parseTag indexes: ", parseStack)
+// console.log("All closing parseTag indexes: ", endParseStack)
 
 
 
 
-// TODO:
+// TODO: fix removeChildren function to work with multiple children parseTag
