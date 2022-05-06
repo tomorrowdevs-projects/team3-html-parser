@@ -50,8 +50,8 @@ let notValid = []
 // Array of intervals where tags are not valid
 let notValidIndexes = []
 
-let file = 'C:\Users\mrleo\Desktop\ProgettoIn_team3\team3-html-parser\files\index.html';
-  // Import the filesystem module
+const file = './files/index.html';
+// Import the filesystem module
 const fs = require('fs');
 // OpenHtmlFile reads the html file and returns a string
 function openHtmlFile(file) {
