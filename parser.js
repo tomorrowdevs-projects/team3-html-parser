@@ -1,3 +1,5 @@
+const fs = require('fs'); 
+
 const text =
     `<!DOCTYPE html>
 <html lang="en">
@@ -49,6 +51,22 @@ let endParseStack = []
 let notValid = []
 // Array of intervals where tags are not valid
 let notValidIndexes = []
+
+const file = './files/index.html';
+
+// OpenHtmlFile reads the html file and returns a string
+function openHtmlFile(file) {
+  try {
+    const content = fs.readFileSync(file);
+
+    console.log(content.toString());
+  } catch (error) { 
+    console.error(`Got an error trying to read the 
+    file: ${error.message}`);
+  }
+}
+
+
 
 // This function find not allowed tags and populate the notValid array with the complete tag substring
 function findNotAllowed(text, startingTag, endingTag) {
@@ -185,13 +203,12 @@ function main() {
     console.log(parseStrings)
 }
 
-
+// openHtmlFile(file)
 main()
 console.log("Invalid intervals where we shouldn't search: ", notValidIndexes)
 // console.log("All starting parseTag indexes: ", parseStack)
 // console.log("All closing parseTag indexes: ", endParseStack)
 
 
-
-
 // TODO: fix removeChildren function to work with multiple children parseTag
+
