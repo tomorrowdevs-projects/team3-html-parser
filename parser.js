@@ -1,44 +1,13 @@
-const fs = require('fs'); 
-
-const text =
-    `<!DOCTYPE html>
-<html lang="en">
-<head>
-<style>
-.style {
-background-image: url('<parse property="foo" </parse>');
-}
-</style>
-<script>
-const url = '<parse property="foo" />';
-</script>
-<meta charset="UTF-8">
-<parse foo="bar">
-    <div>
-        <parse baz="hey" </parse>
-    </div>
-    <div>
-        <parse baz="hoy" </parse>
-    </div>
-</parse>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>HTML 5 Boilerplate</title>
-<!--
-<parse property="stylesheet" href="style.css"></parse>
--->
-</head>
-<body>
-<parse test></parse>
-<script src="index.js"></script>
-</body>
-</html>`
-
-let text_copy = text.slice()
+const fs = require('fs');
+const {
+    extractParseProp,
+    resultMaker
+} = require("./prop_extract");
 
 // Array of invalid tags where inside parse tags will not be valid
-const notAllowed = ['<script', '<style', '<!-- ']
+const notAllowed = ['<script', '<style', '<!-- '] // TODO: fix not allowed interval even if comment tag <!-- is followed by \n character
 const notAllowedEnd = ['</script>', '</style>', '-->']
+//opening and closing tag that we have to match
 const matchTag = "<parse"
 const matchEndTag = "</parse>"
 
@@ -52,21 +21,27 @@ let notValid = []
 // Array of intervals where tags are not valid
 let notValidIndexes = []
 
-const file = './files/index.html';
+// source file path
+const file = './files/test.html';
+// source file string
+const text = openHtmlFile(file)
+//copy of the file string
+let text_copy = text.slice()
 
 // OpenHtmlFile reads the html file and returns a string
 function openHtmlFile(file) {
-  try {
-    const content = fs.readFileSync(file);
+    try {
+        const content = fs.readFileSync(file, {
+            encoding: "utf-8"
+        });
 
-    console.log(content.toString());
-  } catch (error) { 
-    console.error(`Got an error trying to read the 
+        // console.log(content.toString());
+        return content
+    } catch (error) {
+        console.error(`Got an error trying to read the 
     file: ${error.message}`);
-  }
+    }
 }
-
-
 
 // This function find not allowed tags and populate the notValid array with the complete tag substring
 function findNotAllowed(text, startingTag, endingTag) {
@@ -160,7 +135,7 @@ function matchPairs(validIndexes, validClosingIndexes) {
 function removeChildren(pairParse) {
     const validParsePairs = []
     for (let i = 0; i < pairParse.length - 1; i++) {
-        console.log(pairParse[i + 1])
+        // console.log(pairParse[i + 1])
         if (pairParse[i][0] < pairParse[i + 1][0]) {
             validParsePairs.push(pairParse[i])
         }
@@ -176,14 +151,6 @@ function parseStringMaker(text, parseIntervals) {
     return parseStrings
 }
 
-// function to extract valid properties from parseStrings, will return an array of objects
-// with property names as keys and prop values as values
-function extractProperties(parseStrings) {
-    propertiesArr = []
-    // TODO: the following part is incomplete
-    parseStrings.forEach(str => propertiesArr.push(str))
-}
-
 function main() {
     for (let i = 0; i < notAllowed.length; i++) {
         findNotAllowed(text_copy, notAllowed[i], notAllowedEnd[i])
@@ -192,23 +159,30 @@ function main() {
     findParseTag(text, matchTag)
     findCloseTag(text, matchEndTag)
     let validIndexes = validateParseIndexes(indexes = parseStack, intervals = notValidIndexes)
-    console.log("Valid parse tags starting indexes: ", validIndexes)
+    // console.log("Valid parse tags starting indexes: ", validIndexes)
     let validClosingIndexes = validateParseIndexes(indexes = endParseStack, intervals = notValidIndexes)
-    console.log("Valid parse tags closing indexes: ", validClosingIndexes)
+    // console.log("Valid parse tags closing indexes: ", validClosingIndexes)
     const pairParse = matchPairs(validIndexes, validClosingIndexes)
+    // console.log(pairParse)
     const validParsePairs = removeChildren(pairParse)
-    console.log(pairParse)
-    console.log("Valid parent parse tags intervals:", validParsePairs)
+    // console.log("Valid parent parse tags intervals:", validParsePairs)
     const parseStrings = parseStringMaker(text, validParsePairs)
-    console.log(parseStrings)
+    // console.log(parseStrings)
+    const parseProps = extractParseProp(parseStrings)
+    // console.log("Parse properties: ", parseProps)
+    const results = resultMaker(parseProps, parseStrings, validParsePairs)
+    console.dir(results, {
+        depth: 4
+    })
 }
 
-// openHtmlFile(file)
 main()
-console.log("Invalid intervals where we shouldn't search: ", notValidIndexes)
+
+// console.log("Invalid intervals where we shouldn't search: ", notValidIndexes)
 // console.log("All starting parseTag indexes: ", parseStack)
 // console.log("All closing parseTag indexes: ", endParseStack)
 
 
-// TODO: fix removeChildren function to work with multiple children parseTag
-
+// TODO: (1) fix removeChildren function to work with multiple children parseTag
+// TODO: (2) currently the code functions only with closing tags of this type </parse> and double quotes for properties. We should fix the rest of the requirements.
+// TODO: (3) refactor code for better readability and debug
