@@ -1,4 +1,4 @@
-const text =
+ const text =
     `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,6 +49,23 @@ let endParseStack = []
 let notValid = []
 // Array of intervals where tags are not valid
 let notValidIndexes = []
+
+let file = 'C:\Users\mrleo\Desktop\ProgettoIn_team3\team3-html-parser\files\index.html';
+  // Import the filesystem module
+const fs = require('fs');
+// OpenHtmlFile reads the html file and returns a string
+function openHtmlFile(file) {
+  try {
+    const content = fs.readFileSync(file);
+
+    console.log(content.toString());
+  } catch (error) { 
+    console.error(`Got an error trying to read the 
+    file: ${error.message}`);
+  }
+}
+
+
 
 // This function find not allowed tags and populate the notValid array with the complete tag substring
 function findNotAllowed(text, startingTag, endingTag) {
@@ -168,13 +185,9 @@ function main() {
     console.log(validPairParse)
 }
 
-
+openHtmlFile(file)
 main()
 console.log(`Invalid Indexes: ${notValidIndexes}`)
 console.log(`Starting parseTag indexes: ${parseStack}`)
 console.log(`parseTag ending indexes: ${endParseStack}`)
 
-
-
-
-// TODO:
