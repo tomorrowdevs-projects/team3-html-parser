@@ -1,3 +1,5 @@
+
+
 // test string used as input for extractParseProp function
 // const parseStrings = [
 //     '<parse baz="hey"> </parse>',
@@ -14,10 +16,8 @@
 // ]
 
 
-/*
-    Function to extract valid properties from parseStrings, will return an array of objects
-    with property names as keys and prop values as values
-*/
+/* Function to extract valid properties from parseStrings, will return an array of objects =============================
+   with property names as keys and prop values as values */
 function extractParseProp(parseStrings) {
 
     const regex = /(?<key>[a-zA-Z]+)=["|'](?<val>[^"']*)['|"]/gm
@@ -50,13 +50,15 @@ function extractParseProp(parseStrings) {
 
     return propertiesArr;
 }
+//======================================================================================================================
+
 
 // console.log(`Input: \n`, parseStrings)
 // props = extractParseProp(parseStrings)
 // console.log(`Output: \n`, props)
 
 
-// This function is used to generate the results array
+// This function is used to generate the results array =================================================================
 function resultMaker(objects, strings, intervals) {
 
     const results = [];
@@ -73,6 +75,9 @@ function resultMaker(objects, strings, intervals) {
 
     return results;
 }
+//======================================================================================================================
+
+
 
 
 module.exports = {
