@@ -21,7 +21,6 @@ const endParseStack = [];
 
 // Array of strings that should not be parsed as they are invalid
 const notValid = [];
-
 // Array of intervals where tags are not valid
 const notValidIndexes = [];
 
@@ -122,12 +121,19 @@ function findNotAllowed(text, startingTag, endingTag) {
 /* This function finds the invalid substring in the original text and will populate the notValidIndexes ================
    with the invalid intervals of the original text */
 function findNotAllowedIndexes(text, notValid) {
+    //console.log(text)
+    //console.log(text.length)
+    //console.log(notValid)
     notValid.forEach(substr => {
-        // console.log(substr)
-        const start = text.indexOf(substr);
-        let end = start + substr.length;
-        notValidIndexes.push([start, end]);
+        //console.log(substr)
+        if (text.indexOf(substr) !== -1) {
+            const start = text.indexOf(substr);
+            let end = start + substr.length;
+            notValidIndexes.push([start, end]);
+        }
     });
+    //console.log(notValidIndexes)
+    return notValidIndexes
 }
 //======================================================================================================================
 
@@ -245,5 +251,6 @@ function parseStringMaker(text, parseIntervals) {
 
 module.exports = {
     parser,
-    findNotAllowed
+    findNotAllowed,
+    findNotAllowedIndexes
 }
