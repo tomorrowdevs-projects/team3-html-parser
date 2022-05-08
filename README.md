@@ -8,4 +8,12 @@ To **START** the project, type from the CLI:
 ```ruby
 node index.js
 ```
+
+To **COMPILE THE TS FILE** of the project, type from the CLI:
+
+```
+node run dev
+
+it will create a directory "build" with the compilated files
+```
 *Required **Node v16.6.1** or higher.*
