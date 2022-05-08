@@ -29,8 +29,8 @@ test("Test FindNotAllowed Function" , () => {
         .toBe('TrueFalseTrueFalseTrueFalseTrue');
 
     // Other Script Tag
-    // const otherScriptNotValid = "<script src='index.js'></script>" // TEST NOT PASSED
-    const otherScriptNotValid = "<script> src='index.js' </script>" // TEST NOT PASSED
+    // const otherScriptNotValid = "<script src='index.js'></script>" // TEST NOT PASSED - Rule HTML ???
+    const otherScriptNotValid = "<script> src='index.js' </script>"
     const otherScriptNotValidTrue = `True${otherScriptNotValid}`
     const otherScriptNotValidFalse = `${otherScriptNotValid}False`
     const otherScriptNotValidAdvanced = `True${otherScriptNotValid}False${scriptNotValidTrue}FalseTrue${scriptNotValidFalse}True`
