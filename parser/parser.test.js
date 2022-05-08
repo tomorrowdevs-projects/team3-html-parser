@@ -11,11 +11,11 @@ test("Tests FindNotAllowed Function" , () => {
     const scriptTags = ['<script>', '</script>'];
     const scriptNotValidOne = "<script> const url = '<parse property=\"foo\" />' </script>";
     // const otherScriptNotValid = "<script src='index.js'></script>" // TEST NOT PASSED - Rule HTML ???
-    const ScriptNotValidTwo = "<script> src='index.js' </script>";
+    const scriptNotValidTwo = "<script> src='index.js' </script>";
     const toTest = [
         [styleNotValidOne, styleTags],
         [scriptNotValidOne, scriptTags],
-        [ScriptNotValidTwo, scriptTags],
+        [scriptNotValidTwo, scriptTags],
     ];
     // Tests
     toTest.map(elem => {
