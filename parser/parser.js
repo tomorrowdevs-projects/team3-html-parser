@@ -19,7 +19,7 @@ const parseStack = [];
 // Array of closing </parse> tag indexes
 const endParseStack = [];
 
-// Array of not valid string intervals
+// Array of strings that should not be parsed as they are invalid
 const notValid = [];
 // Array of intervals where tags are not valid
 const notValidIndexes = [];
@@ -31,7 +31,6 @@ function parser(filename) {
     const text = openHtmlFile(filename);
     // Copy of the file string
     let text_copy = text.slice();
-
     for (let i = 0; i < notAllowed.length; i++) {
         findNotAllowed(text_copy, notAllowed[i], notAllowedEnd[i]);
     }
@@ -71,7 +70,7 @@ function parser(filename) {
 
 
 
-// OpenHtmlFile reads the html file and returns a string ===============================================================
+// This function reads an html file and returns its contents as a string ===============================================
 function openHtmlFile(filename) {
     try {
         return fs.readFileSync(filename, {encoding: "utf-8"});
@@ -82,31 +81,39 @@ function openHtmlFile(filename) {
 //======================================================================================================================
 
 
-// This function find not allowed tags and populate the notValid array with the complete tag substring =================
+// This function find not allowed tags and populates the notValid array with the complete tag substring ================
 function findNotAllowed(text, startingTag, endingTag) {
 
-    // counters for delimiting start and end of the not valid interval
+    // Counters for delimiting start and end of the not valid interval
     let start = 0;
     let end = 0;
 
     if (text.indexOf(startingTag) !== -1) {
+        // StartingTag found
         start = text.indexOf(startingTag);
 
+        // Because an opening tag was found, a closing tag must also be found (see HTML rules)
         if (text.indexOf(endingTag, start) !== -1) {
+            // EndingTag found
             end = text.indexOf(endingTag, start) + endingTag.length;
 
+            // Substring not to be parsed
             const toRemove = text.substring(start, end);
             notValid.push(toRemove);
             // console.log(toRemove)
+            // console.log(notValid)
+
+            // Removal from the text of the substring that must not be parsed
             text = text.replace(toRemove, "");
 
+            // Recursive text analysis
             return findNotAllowed(text, startingTag, endingTag)
 
         } else {
             throw Error("closing tag not found");
         }
     }
-    return false;
+    return text
 }
 //======================================================================================================================
 
@@ -114,12 +121,19 @@ function findNotAllowed(text, startingTag, endingTag) {
 /* This function finds the invalid substring in the original text and will populate the notValidIndexes ================
    with the invalid intervals of the original text */
 function findNotAllowedIndexes(text, notValid) {
+    //console.log(text)
+    //console.log(text.length)
+    //console.log(notValid)
     notValid.forEach(substr => {
-        // console.log(substr)
-        const start = text.indexOf(substr);
-        let end = start + substr.length;
-        notValidIndexes.push([start, end]);
+        //console.log(substr)
+        if (text.indexOf(substr) !== -1) {
+            const start = text.indexOf(substr);
+            let end = start + substr.length;
+            notValidIndexes.push([start, end]);
+        }
     });
+    //console.log(notValidIndexes)
+    return notValidIndexes
 }
 //======================================================================================================================
 
@@ -235,7 +249,8 @@ function parseStringMaker(text, parseIntervals) {
 // TODO: (2) currently the code functions only with closing tags of this type </parse> and double quotes for properties. We should fix the rest of the requirements.
 // TODO: (3) refactor code for better readability and debug
 
-
 module.exports = {
-    parser
-};
+    parser,
+    findNotAllowed,
+    findNotAllowedIndexes
+}
