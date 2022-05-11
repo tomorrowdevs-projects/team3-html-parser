@@ -86,11 +86,6 @@ function parser_V2(fileName) { //===============================================
                 selfClosing = false
                 break;
 
-            case "-":
-                z = checkClosingComment(htmlString, i)
-                i = z
-                break;
-
             case "/":
                 z = matchClosingTags(htmlString, i)
                 i = z
@@ -102,6 +97,13 @@ function parser_V2(fileName) { //===============================================
 
             case "\"":
                 checkQuotation()
+                break;
+
+            case "-":
+                z = checkClosingComment(htmlString, i)
+                i = z
+                break;
+
 
         }
         //console.log(i)
@@ -109,7 +111,9 @@ function parser_V2(fileName) { //===============================================
     }
     const parseProps = propExtract.extractParseProp(parseSubstrings)
     const results = propExtract.resultMaker(parseProps, parseSubstrings, parseIndexCouples)
-    console.log("results: ", results)
+    console.dir(results, {
+        depth: 5
+    });
 }
 //======================================================================================================================
 
@@ -128,13 +132,13 @@ function matchOpeningTags(htmlString, counter) { //=============================
         return counter + 5
     }
     // Tag STYLE
-    else if (htmlString.substring(counter, counter + 6) === "<style") {
+    else if (htmlString.substring(counter, counter + 6) === "<style" && !inString) {
         console.log("style")
         inInvalidTag = true
         return counter + 5
     }
     // Tag SCRIPT
-    else if ((htmlString.substring(counter, counter + 7) === "<script")) {
+    else if ((htmlString.substring(counter, counter + 7) === "<script" && !inString)) {
         console.log("script")
         inInvalidTag = true
         return counter + 6
@@ -178,14 +182,14 @@ function matchClosingTags(htmlString, counter) { //=============================
 
     }
     // Tag /STYLE
-    else if (htmlString.substring(counter, counter + 7) === "/style>") {
+    else if (htmlString.substring(counter, counter + 7) === "/style>" && !inString) {
         console.log("closing style")
         inInvalidTag = false
         return counter + 6
 
     }
     // Tag /SCRIPT
-    else if ((htmlString.substring(counter, counter + 8) === "/script>")) {
+    else if ((htmlString.substring(counter, counter + 8) === "/script>" && !inString)) {
         console.log("closing script")
         inInvalidTag = false
         return counter + 7

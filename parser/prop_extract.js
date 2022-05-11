@@ -60,6 +60,9 @@ function extractParseProp(parseStrings) {
 
 // This function is used to generate the results array =================================================================
 function resultMaker(objects, strings, intervals) {
+    //console.log(objects)
+    //console.log(strings)
+    //console.log(intervals)
 
     const results = [];
 
@@ -67,7 +70,7 @@ function resultMaker(objects, strings, intervals) {
     for (let i = 0; i < strings.length; i++) {
         results.push({
             "raw": strings[i],
-            "properties": (objects[i] !== null) ? [objects[i]] : [],
+            "properties": objects[i] ? objects[i] : [],
             "from": intervals[i][0],
             "to": intervals[i][1],
         });
