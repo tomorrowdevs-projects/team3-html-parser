@@ -97,8 +97,8 @@ function parser_V2(fileName) { //===============================================
                 break;
 
             case "\'":
-                // currently this function doesn't work
-                // checkApex()
+                checkApex()
+                break;
 
             case "\"":
 
@@ -109,6 +109,9 @@ function parser_V2(fileName) { //===============================================
         //console.log(i)
         i++
     }
+    const parseProps = propExtract.extractParseProp(parseSubstrings)
+    const results = propExtract.resultMaker(parseProps, parseSubstrings, parseIndexCouples)
+    console.log("results: ", results)
 }
 //======================================================================================================================
 
@@ -117,7 +120,7 @@ function parser_V2(fileName) { //===============================================
 function matchOpeningTags(htmlString, counter) { //===========================================================================
 
     // Tag PARSE
-    if (htmlString.substring(counter, counter + 6) === "<parse" && canParse) {
+    if (htmlString.substring(counter, counter + 6) === "<parse" && canParse && !inString) {
         console.log("parse")
         if (!inParse) {
             inParse = true
@@ -160,7 +163,7 @@ function matchOpeningTags(htmlString, counter) { //=============================
 
 
 
-function matchClosingTags(htmlString, counter) { //===========================================================================
+function matchClosingTags(htmlString, counter) { //=====================================================================
 
     // Tag /PARSE
     if (htmlString.substring(counter, counter + 7) === "/parse>" && canParse && inParse) {
@@ -200,14 +203,16 @@ function matchClosingTags(htmlString, counter) { //=============================
 
 // TODO: this following two functions dont' work properly
 function checkApex() {
-    if (apexCounter === 0) {
+    if (apexCounter === 0 && quotationCounter === 0) {
         apexCounter++
         inString = true
-    } else {
-        apexCounter--
-        if (apexCounter === 0 && quotationCounter === 0) {
-            inString = false
-        }
+    }
+    else if (apexCounter !== 0 && quotationCounter === 0){
+        apexCounter --
+        inString = false
+    }
+    else if (apexCounter !== 0 && quotationCounter !== 0){
+        apexCounter --
     }
 }
 
@@ -293,11 +298,11 @@ function openHtmlFile(filename) {
 //parser_V2(text)
 // console.log("parse substrings", parseSubstrings)
 // console.log("parse index couples: ", parseIndexCouples)
-const parseProps = propExtract.extractParseProp(parseSubstrings)
+//const parseProps = propExtract.extractParseProp(parseSubstrings)
 // console.log("Parse props: ", parseProps)
 //console.log()
-const results = propExtract.resultMaker(parseProps, parseSubstrings, parseIndexCouples)
-console.log("results: ", results)
+//const results = propExtract.resultMaker(parseProps, parseSubstrings, parseIndexCouples)
+//console.log("results: ", results)
 // ==============================================================================================
 
 // TODO:(1) the case where style have a nested script tag or viceversa is not verified / working
