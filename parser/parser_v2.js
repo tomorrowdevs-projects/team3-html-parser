@@ -57,12 +57,11 @@ function parser_V2(fileName) { //===============================================
     while (i < htmlString.length) {
 
         // If true ve can parse
-        canParse = inHtmlComment || inString || inInvalidTag
+        canParse = !(inHtmlComment || inString || inInvalidTag)
 
         switch (htmlString[i]) {
-
             // Open Tag
-            case "<":
+            case ("<"):
                 // Counter
                 z = matchOpeningTags(htmlString, i)
                 // Counter Updated (if tag found) or Not Updated (tag not found)
@@ -70,15 +69,17 @@ function parser_V2(fileName) { //===============================================
                 break;
 
             // Closing tag Parse
-            case "/" && inParse && canParse && selfClosing && htmlString[i + 1] === ">":
-                if (openParseIndex.length === 1) {
-                    parseSubstrings.push(htmlString.substring(openParseIndex[0], i + 2));
-                    parseIndexCouples.push([openParseIndex[0], i + 1])
-                    console.log(parseSubstrings, parseIndexCouples)
-                }
-                openParseIndex.pop()
-                inParse = false
-                break;
+            // && inParse && !canParse && selfClosing &&
+            // case "/" && htmlString[i + 1] === ">":
+            //     console.log("PARSE CLOSING TAG")
+            //     if (openParseIndex.length === 1) {
+            //         parseSubstrings.push(htmlString.substring(openParseIndex[0], i + 2));
+            //         parseIndexCouples.push([openParseIndex[0], i + 1])
+            //         console.log(parseSubstrings, parseIndexCouples)
+            //     }
+            //     openParseIndex.pop()
+            //     inParse = false
+            //     break;
 
             // Not Self Closing tag Parse
             case ">" && inParse && canParse:
@@ -121,6 +122,10 @@ function parser_V2(fileName) { //===============================================
 
 function matchOpeningTags(htmlString, counter) { //===========================================================================
 
+    // console.log('inHTMLComment ',  inHtmlComment)
+    // console.log('inInvalidTag ', inInvalidTag)
+    // console.log('inString ', inString)
+    // console.log(htmlString.substring(counter, counter + 6))
     // Tag PARSE
     if (htmlString.substring(counter, counter + 6) === "<parse" && canParse && !inString) {
         console.log("parse")
@@ -167,6 +172,8 @@ function matchOpeningTags(htmlString, counter) { //=============================
 
 function matchClosingTags(htmlString, counter) { //=====================================================================
 
+    // console.log('inParse ', inParse)
+    // console.log('canParse ', canParse)
     // Tag /PARSE
     if (htmlString.substring(counter, counter + 7) === "/parse>" && canParse && inParse) {
         console.log("closing parse")
@@ -179,7 +186,6 @@ function matchClosingTags(htmlString, counter) { //=============================
         }
         openParseIndex.pop()
         return counter + 6
-
     }
     // Tag /STYLE
     else if (htmlString.substring(counter, counter + 7) === "/style>" && !inString) {
@@ -194,6 +200,18 @@ function matchClosingTags(htmlString, counter) { //=============================
         inInvalidTag = false
         return counter + 7
 
+    }
+    if (htmlString.substring(counter, counter + 2) === "/>" && canParse && inParse) {
+        console.log("closing parse")
+
+        if (openParseIndex.length === 1) {
+            inParse = false
+            parseSubstrings.push(htmlString.substring(openParseIndex[0], counter + 2))
+            parseIndexCouples.push([openParseIndex[0], counter + 1])
+            openParseIndex.pop()
+        }
+        openParseIndex.pop()
+        return counter + 1
     }
     else {
         return counter
