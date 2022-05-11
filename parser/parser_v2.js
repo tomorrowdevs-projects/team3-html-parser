@@ -101,9 +101,7 @@ function parser_V2(fileName) { //===============================================
                 break;
 
             case "\"":
-
-                // currently this function doesn't work
-                // checkQuotation()
+                checkQuotation()
 
         }
         //console.log(i)
@@ -219,14 +217,16 @@ function checkApex() {
 
 
 function checkQuotation() {
-    if (quotationCounter === 0) {
-        quotationCounter++
+    if (quotationCounter === 0 && apexCounter === 0) {
+        quotationCounter ++
         inString = true
-    } else {
-        quotationCounter--
-        if (quotationCounter === 0 && apexCounter === 0) {
-            inString = false
-        }
+    }
+    else if (quotationCounter !== 0 && apexCounter === 0){
+        quotationCounter --
+        inString = false
+    }
+    else if (quotationCounter !== 0 && apexCounter !== 0){
+        quotationCounter --
     }
 }
 
