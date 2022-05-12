@@ -5,19 +5,21 @@ const propExtract = require("./prop_extract");
 
 // Bool used to check if we can Parse
 let canParse = true
+
 // Bool to check if we are inside an invalid tag
 let inInvalidTag = false
+
 // Bool to check if we are inside a string
 let inString = false
 
 // Bool to check if we are inside an html comment
 let inHtmlComment = false
 
-// ParseMode means that we have found a open parse tag and we have to search the closing tag
-let inParse = false
+// Bool to check if we are inside a parse comment ex: <!--#
+let inParseComment = false
 
-// SelfClosing means that we are searching for a /> that closes the parse tag
-let selfClosing = true
+// In parse means that we have found a open parse tag and we have to search the closing tag
+let inParse = false
 
 //======================================================================================================================
 
@@ -29,15 +31,6 @@ const openParseIndex = []
 
 // Array where parse index couples will be stored
 const parseIndexCouples = []
-
-// Array of indexes of <!--# tags
-const openCommentIndex = []
-
-// Array of parse comments starting and ending indexes in couples ex: [[50,78], [10,22]]
-const commentIndexCouples = []
-
-// Array of parse comments substrings that need to be validated
-const commentSubstrings = []
 
 // Counter for ' characters
 let apexCounter = 0
@@ -56,7 +49,7 @@ function parser_V2(fileName) { //===============================================
 
     while (i < htmlString.length) {
 
-        // If true ve can parse
+        // If true we can parse 
         canParse = !(inHtmlComment || inString || inInvalidTag)
 
         switch (htmlString[i]) {
@@ -66,25 +59,6 @@ function parser_V2(fileName) { //===============================================
                 z = matchOpeningTags(htmlString, i)
                 // Counter Updated (if tag found) or Not Updated (tag not found)
                 i = z
-                break;
-
-            // Closing tag Parse
-            // && inParse && !canParse && selfClosing &&
-            // case "/" && htmlString[i + 1] === ">":
-            //     console.log("PARSE CLOSING TAG")
-            //     if (openParseIndex.length === 1) {
-            //         parseSubstrings.push(htmlString.substring(openParseIndex[0], i + 2));
-            //         parseIndexCouples.push([openParseIndex[0], i + 1])
-            //         console.log(parseSubstrings, parseIndexCouples)
-            //     }
-            //     openParseIndex.pop()
-            //     inParse = false
-            //     break;
-
-            // Not Self Closing tag Parse
-            case ">" && inParse && canParse:
-                console.log("selfClosing off")
-                selfClosing = false
                 break;
 
             case "/":
@@ -104,10 +78,7 @@ function parser_V2(fileName) { //===============================================
                 z = checkClosingComment(htmlString, i)
                 i = z
                 break;
-
-
         }
-        //console.log(i)
         i++
     }
     const parseProps = propExtract.extractParseProp(parseSubstrings)
@@ -122,13 +93,8 @@ function parser_V2(fileName) { //===============================================
 
 function matchOpeningTags(htmlString, counter) { //===========================================================================
 
-    // console.log('inHTMLComment ',  inHtmlComment)
-    // console.log('inInvalidTag ', inInvalidTag)
-    // console.log('inString ', inString)
-    // console.log(htmlString.substring(counter, counter + 6))
     // Tag PARSE
     if (htmlString.substring(counter, counter + 6) === "<parse" && canParse && !inString) {
-        console.log("parse")
         if (!inParse) {
             inParse = true
             selfClosing = true
@@ -138,28 +104,27 @@ function matchOpeningTags(htmlString, counter) { //=============================
     }
     // Tag STYLE
     else if (htmlString.substring(counter, counter + 6) === "<style" && !inString) {
-        console.log("style")
         inInvalidTag = true
         return counter + 5
     }
     // Tag SCRIPT
     else if ((htmlString.substring(counter, counter + 7) === "<script" && !inString)) {
-        console.log("script")
         inInvalidTag = true
         return counter + 6
     }
     // COMMENT
     else if (htmlString.substring(counter, counter + 4) === "<!--") {
         if (htmlString[counter + 4] === "#") {
-            console.log("parse comment")
-            openCommentIndex.push(counter)
+            inParseComment = true
             return counter + 4
-        }
-        else {
-            console.log("html comment")
+        } else {
             inHtmlComment = true
             return counter + 3
         }
+    }
+    // INVALID TAG IN PARSE COMMENT
+    else if (inParseComment && !inParse) {
+        throw new Error("Invalid parse comment!");
     }
     // No Tag found
     else {
@@ -169,70 +134,55 @@ function matchOpeningTags(htmlString, counter) { //=============================
 //======================================================================================================================
 
 
-
 function matchClosingTags(htmlString, counter) { //=====================================================================
 
-    // console.log('inParse ', inParse)
-    // console.log('canParse ', canParse)
     // Tag /PARSE
     if (htmlString.substring(counter, counter + 7) === "/parse>" && canParse && inParse) {
-        console.log("closing parse")
 
         if (openParseIndex.length === 1) {
             inParse = false
             parseSubstrings.push(htmlString.substring(openParseIndex[0], counter + 7))
             parseIndexCouples.push([openParseIndex[0], counter + 6])
-            openParseIndex.pop()
         }
         openParseIndex.pop()
         return counter + 6
     }
     // Tag /STYLE
     else if (htmlString.substring(counter, counter + 7) === "/style>" && !inString) {
-        console.log("closing style")
         inInvalidTag = false
         return counter + 6
-
     }
     // Tag /SCRIPT
     else if ((htmlString.substring(counter, counter + 8) === "/script>" && !inString)) {
-        console.log("closing script")
         inInvalidTag = false
         return counter + 7
-
     }
+    // SELF CLOSING TAG
     if (htmlString.substring(counter, counter + 2) === "/>" && canParse && inParse) {
-        console.log("closing parse")
 
         if (openParseIndex.length === 1) {
             inParse = false
             parseSubstrings.push(htmlString.substring(openParseIndex[0], counter + 2))
             parseIndexCouples.push([openParseIndex[0], counter + 1])
-            openParseIndex.pop()
         }
         openParseIndex.pop()
         return counter + 1
-    }
-    else {
+    } else {
         return counter
     }
 }
 //======================================================================================================================
 
 
-
-// TODO: this following two functions dont' work properly
 function checkApex() {
     if (apexCounter === 0 && quotationCounter === 0) {
         apexCounter++
         inString = true
-    }
-    else if (apexCounter !== 0 && quotationCounter === 0){
-        apexCounter --
+    } else if (apexCounter !== 0 && quotationCounter === 0) {
+        apexCounter--
         inString = false
-    }
-    else if (apexCounter !== 0 && quotationCounter !== 0){
-        apexCounter --
+    } else if (apexCounter !== 0 && quotationCounter !== 0) {
+        apexCounter--
     }
 }
 
@@ -240,28 +190,23 @@ function checkApex() {
 
 function checkQuotation() {
     if (quotationCounter === 0 && apexCounter === 0) {
-        quotationCounter ++
+        quotationCounter++
         inString = true
-    }
-    else if (quotationCounter !== 0 && apexCounter === 0){
-        quotationCounter --
+    } else if (quotationCounter !== 0 && apexCounter === 0) {
+        quotationCounter--
         inString = false
-    }
-    else if (quotationCounter !== 0 && apexCounter !== 0){
-        quotationCounter --
+    } else if (quotationCounter !== 0 && apexCounter !== 0) {
+        quotationCounter--
     }
 }
 
 
 function checkClosingComment(text, counter) { //========================================================================
     if (text.substring(counter, counter + 3) === "-->") {
-        console.log("closing comment")
-        if (inHtmlComment) {
+        if (inHtmlComment && !inString) {
             inHtmlComment = false
-        } else if (commentIndexCouples.length === 1) {
-            commentSubstrings.push(text.substring(openCommentIndex[0], counter + 3))
-            commentIndexCouples.push(openCommentIndex[0], counter + 2)
-            openCommentIndex.pop()
+        } else if (inParseComment && !inString) {
+            inParseComment = false
         }
         return counter + 2
     }
@@ -269,38 +214,6 @@ function checkClosingComment(text, counter) { //================================
 }
 //======================================================================================================================
 
-
-
-/* This function verifies if a comment string is valid, it means that we can have only parse tags ======================
-    with eventually other tags nested inside */
-function verifyComment(parseComments) {
-    parseComments.forEach(comment => {
-        /* here we have to remove all the <parse> parts and check if there are any other types of tags remaining,
-        if, for example, there is a <div> remaining the comment is invalid */
-
-        cleanComment = comment.replace("<!--#", "")
-
-        // here we delete new line characters and spaces from the string
-        cleanComment = cleanComment.replace(/\r?\n|\r| /g, "").trim()
-
-        if (cleanComment.startsWith("<parse")) {
-            cleanComment = cleanComment.replace("-->", "")
-            if (cleanComment.endsWith("</parse>")) {
-                // here we have a valid  parse comment
-                console.log("Valid comment", comment)
-            } else if (cleanComment.endsWith("/>")) {
-                // this is the case where it ends with />
-                // TODO: check if "/>"" is the closing tag of "<parse" and validate the comment
-            } else {
-                throw Error("Error! Comment ends with an invalid tag")
-            }
-        } else {
-            // if comment doesn't start with <parse tag it's and invalid comment
-            throw ("Error! Comment starts with an invalid tag")
-        }
-    });
-}
-//======================================================================================================================
 
 
 // This function reads an html file and returns its contents ===========================================================
@@ -314,21 +227,7 @@ function openHtmlFile(filename) {
 //======================================================================================================================
 
 
-
-// THIS PART IS ONLY TO TEST IF CODE WORKS =============================================================================
-//const text = openFile("../files/test.html")
-//parser_V2(text)
-// console.log("parse substrings", parseSubstrings)
-// console.log("parse index couples: ", parseIndexCouples)
-//const parseProps = propExtract.extractParseProp(parseSubstrings)
-// console.log("Parse props: ", parseProps)
-//console.log()
-//const results = propExtract.resultMaker(parseProps, parseSubstrings, parseIndexCouples)
-//console.log("results: ", results)
-// ==============================================================================================
-
-// TODO:(1) the case where style have a nested script tag or viceversa is not verified / working
-// TODO:(2) check if parse comment is valid, see requirements
+// the case where script have a nested style tag is not verified, is it valid html?
 
 module.exports = {
     parser_V2
