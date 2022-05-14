@@ -1,8 +1,8 @@
 
-const parser = require("./parser_v2");
+const parser = require("./parser/parser");
 
 // Source file path
 const fileName = './files/test.html';
 
 // Start the HTML parser
-parser.parser_V2(fileName);
+parser.parserMain(fileName);

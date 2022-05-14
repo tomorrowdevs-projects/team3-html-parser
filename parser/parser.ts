@@ -1,5 +1,6 @@
 const fs = require('fs');
-const propExtract = require("./../parser/prop_extract");
+// To FIX
+const propExtract = require("./../../parser/prop_extract");
 
 // Status checkers =====================================================================================================
 
@@ -44,47 +45,42 @@ let apexCounter: number = 0
 // Counter for " characters
 let quotationCounter: number = 0
 
-function parser_V2(fileName: string) { //=====================================================================================
+function parserMain(fileName: string) { //=====================================================================================
 
     // OPEN FILE
     const htmlString = openHtmlFile(fileName)
 
     let i = 0;
-    let z = 0;
 
     while (i < htmlString.length) {
 
-        // If true we can parse 
+        // If true we can parse
         canParse = !(inHtmlComment || inString || inInvalidTag)
 
         switch (htmlString[i]) {
             // Open Tag
             case ("<"):
                 // Counter
-                z = matchOpeningTags(htmlString, i)
-                // Counter Updated (if tag found) or Not Updated (tag not found)
-                i = z
+                i = matchOpeningTags(htmlString, i)
                 break;
 
             case "/":
-                z = matchClosingTags(htmlString, i)
-                i = z
+                i = matchClosingTags(htmlString, i)
                 break;
 
             case "\'":
-                checkApex()
+                apexCounter = checkString(apexCounter, quotationCounter)
                 break;
 
             case "\"":
-                checkQuotation()
+                quotationCounter = checkString(quotationCounter, apexCounter)
                 break;
 
             case "-":
-                z = checkClosingComment(htmlString, i)
-                i = z
+                i = checkClosingComment(htmlString, i)
                 break;
         }
-        i++
+        i++;
     }
     const parseProps = propExtract.extractParseProp(parseSubstrings)
     const results = propExtract.resultMaker(parseProps, parseSubstrings, parseIndexCouples)
@@ -93,6 +89,8 @@ function parser_V2(fileName: string) { //=======================================
     });
 }
 //======================================================================================================================
+
+
 
 function matchOpeningTags(htmlString: string, counter: number): number { //===========================================================================
 
@@ -137,6 +135,7 @@ function matchOpeningTags(htmlString: string, counter: number): number { //=====
 //==========================================================================================================================================================================
 
 
+
 function matchClosingTags(htmlString: string, counter: number): number { //=====================================================================
 
     // Tag /PARSE
@@ -177,31 +176,21 @@ function matchClosingTags(htmlString: string, counter: number): number { //=====
 //======================================================================================================================
 
 
-function checkApex(): void {
-    if (apexCounter === 0 && quotationCounter === 0) {
-        apexCounter++
+
+function checkString(external: number, internal: number) { //=========================================================================================
+    if (external === 0 && internal === 0) {
+        external++
         inString = true
-    } else if (apexCounter !== 0 && quotationCounter === 0) {
-        apexCounter--
+    } else if (external !== 0 && internal === 0) {
+        external--
         inString = false
-    } else if (apexCounter !== 0 && quotationCounter !== 0) {
-        apexCounter--
+    } else if (external !== 0 && internal !== 0) {
+        external--
     }
+    return external
 }
+//======================================================================================================================
 
-
-
-function checkQuotation() {
-    if (quotationCounter === 0 && apexCounter === 0) {
-        quotationCounter++
-        inString = true
-    } else if (quotationCounter !== 0 && apexCounter === 0) {
-        quotationCounter--
-        inString = false
-    } else if (quotationCounter !== 0 && apexCounter !== 0) {
-        quotationCounter--
-    }
-}
 
 
 function checkClosingComment(text: string, counter: number): number { //========================================================================
@@ -216,7 +205,6 @@ function checkClosingComment(text: string, counter: number): number { //========
     return counter
 }
 //======================================================================================================================
-
 
 
 // This function reads an html file and returns its contents ===========================================================
@@ -234,5 +222,6 @@ function openHtmlFile(filename: string): string {
 // the case where script have a nested style tag is not verified, is it valid html?
 
 module.exports = {
-    parser_V2
+    parserMain,
+    matchOpeningTags
 }
