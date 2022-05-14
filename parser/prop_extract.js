@@ -1,30 +1,11 @@
-
-
-// test string used as input for extractParseProp function
-// const parseStrings = [
-//     '<parse baz="hey"> </parse>',
-//     '<parse foo="bar">\n' +
-//     '    <div>\n' +
-//     '        <parse baz="hey" </parse>\n' +
-//     '    </div>\n' +
-//     '    <div>\n' +
-//     '        <parse baz="hoy" </parse>\n' +
-//     '    </div>\n' +
-//     '</parse>',
-//     '<parse property="stylesheet" href=""></parse>',
-//     '<parse> foo bar </parse>'
-// ]
-
-
-/* Function to extract valid properties from parseStrings, will return an array of objects =============================
+/* Function to extract valid properties from parseSubstrings, will return an array of parseProps =============================
    with property names as keys and prop values as values */
-function extractParseProp(parseStrings) {
+function extractParseProp(parseSubstrings) {
 
     const regex = /(?<key>[a-zA-Z]+)=["|'](?<val>[^"']*)['|"]/gm
     const propertiesArr = [];
 
-    // TODO: the following part is incomplete
-    parseStrings.forEach(str => {
+    parseSubstrings.forEach(str => {
 
         const start = str.indexOf("<parse ") + "<parse ".length;
         const end = str.indexOf(">");
@@ -35,16 +16,14 @@ function extractParseProp(parseStrings) {
             cleanStr = null;
             propertiesArr.push(cleanStr);
         } else {
-            // match = cleanStr.match(regex)
-            const resObj = {};
+            const propertiesObject = {};
             let match = regex.exec(cleanStr);
 
             do {
-                // console.log(`Match ${match.groups.key} ${match.groups.val}`);
-                resObj[match.groups.key] = (match.groups.val !== "") ? match.groups.val : null
+                propertiesObject[match.groups.key] = (match.groups.val !== "") ? match.groups.val : null
             } while ((match = regex.exec(cleanStr)) !== null)
 
-            propertiesArr.push(resObj);
+            propertiesArr.push(propertiesObject);
         }
     });
 
@@ -53,26 +32,19 @@ function extractParseProp(parseStrings) {
 //======================================================================================================================
 
 
-// console.log(`Input: \n`, parseStrings)
-// props = extractParseProp(parseStrings)
-// console.log(`Output: \n`, props)
-
-
 // This function is used to generate the results array =================================================================
-function resultMaker(objects, strings, intervals) {
-    //console.log(objects)
-    //console.log(strings)
-    //console.log(intervals)
+function resultMaker(parseProps, parseSubstrings, parseIndexCouples) {
 
     const results = [];
 
     // TODO: check if length of the 3 arrays is equal, otherwise something is missing
-    for (let i = 0; i < strings.length; i++) {
+
+    for (let i = 0; i < parseSubstrings.length; i++) {
         results.push({
-            "raw": strings[i],
-            "properties": objects[i] ? objects[i] : [],
-            "from": intervals[i][0],
-            "to": intervals[i][1],
+            "raw": parseSubstrings[i],
+            "properties": parseProps[i] ? parseProps[i] : [],
+            "from": parseIndexCouples[i][0],
+            "to": parseIndexCouples[i][1],
         });
     }
 

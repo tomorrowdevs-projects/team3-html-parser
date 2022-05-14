@@ -82,10 +82,11 @@ function parser_V2(fileName) { //===============================================
         i++
     }
     const parseProps = propExtract.extractParseProp(parseSubstrings)
-    const results = propExtract.resultMaker(parseProps, parseSubstrings, parseIndexCouples)
-    console.dir(results, {
+    const parseResults = propExtract.resultMaker(parseProps, parseSubstrings, parseIndexCouples)
+    console.dir(parseResults, {
         depth: 5
     });
+    return parseResults
 }
 //======================================================================================================================
 
