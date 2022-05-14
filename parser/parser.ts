@@ -222,5 +222,6 @@ function openHtmlFile(filename: string): string {
 // the case where script have a nested style tag is not verified, is it valid html?
 
 module.exports = {
-    parserMain
+    parserMain,
+    matchOpeningTags
 }
