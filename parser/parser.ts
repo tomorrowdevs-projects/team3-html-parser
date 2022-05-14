@@ -45,7 +45,7 @@ let apexCounter: number = 0
 // Counter for " characters
 let quotationCounter: number = 0
 
-function parser_V2(fileName: string) { //=====================================================================================
+function parserMain(fileName: string) { //=====================================================================================
 
     // OPEN FILE
     const htmlString = openHtmlFile(fileName)
@@ -95,6 +95,8 @@ function parser_V2(fileName: string) { //=======================================
 }
 //======================================================================================================================
 
+
+
 function matchOpeningTags(htmlString: string, counter: number): number { //===========================================================================
 
     // Tag PARSE
@@ -138,6 +140,7 @@ function matchOpeningTags(htmlString: string, counter: number): number { //=====
 //==========================================================================================================================================================================
 
 
+
 function matchClosingTags(htmlString: string, counter: number): number { //=====================================================================
 
     // Tag /PARSE
@@ -178,7 +181,8 @@ function matchClosingTags(htmlString: string, counter: number): number { //=====
 //======================================================================================================================
 
 
-function checkApex(): void {
+
+function checkApex(): void { //=========================================================================================
     if (apexCounter === 0 && quotationCounter === 0) {
         apexCounter++
         inString = true
@@ -189,10 +193,10 @@ function checkApex(): void {
         apexCounter--
     }
 }
+//======================================================================================================================
 
 
-
-function checkQuotation() {
+function checkQuotation() { //==========================================================================================
     if (quotationCounter === 0 && apexCounter === 0) {
         quotationCounter++
         inString = true
@@ -203,7 +207,7 @@ function checkQuotation() {
         quotationCounter--
     }
 }
-
+//======================================================================================================================
 
 function checkClosingComment(text: string, counter: number): number { //========================================================================
     if (text.substring(counter, counter + 3) === "-->") {
@@ -219,7 +223,6 @@ function checkClosingComment(text: string, counter: number): number { //========
 //======================================================================================================================
 
 
-
 // This function reads an html file and returns its contents ===========================================================
 function openHtmlFile(filename: string): string {
     try {
@@ -232,8 +235,11 @@ function openHtmlFile(filename: string): string {
 //======================================================================================================================
 
 
+
+
+
 // the case where script have a nested style tag is not verified, is it valid html?
 
 module.exports = {
-    parser_V2
+    parserMain
 }
