@@ -1,7 +1,7 @@
 /* Function to extract valid properties from parseSubstrings, will return an array of parseProps =============================
    with property names as keys and prop values as values */
 function extractParseProp(parseSubstrings: string[]) {
-  const regex = /(?<key>[a-zA-Z]+)=["|'](?<val>[^"']*)['|"]/gm;
+  const regex = /(?<key>[a-zA-Z]+)=["](?<val>[^"]*)["]/gm;
   const propertiesArr: {}[] = [];
 
   type propertiesObjectType = {
@@ -18,12 +18,19 @@ function extractParseProp(parseSubstrings: string[]) {
       // cleanStr = null;
       propertiesArr.push(cleanStr);
     } else {
-      let match = regex.exec(cleanStr);
       const propertiesObject: propertiesObjectType = {};
+      let match = regex.exec(cleanStr);
       do {
         // TODO: Fix this part to work in typescript
-        propertiesObject[match.groups.key] =
-          match.groups.val !== "" ? match.groups.val : null;
+        let propName: string = "";
+        let propValue: string = "";
+        if (match !== null && match.groups !== null) {
+          if (match.groups !== undefined) {
+            propName = match.groups.key;
+            propValue = match.groups.val;
+            propertiesObject[propName] = propValue;
+          }
+        }
       } while ((match = regex.exec(cleanStr)) !== null);
 
       propertiesArr.push(propertiesObject);
