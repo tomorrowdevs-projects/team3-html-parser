@@ -51,7 +51,6 @@ function parserMain(fileName: string) { //======================================
     const htmlString = openHtmlFile(fileName)
 
     let i = 0;
-    let z = 0;
 
     while (i < htmlString.length) {
 
@@ -62,30 +61,26 @@ function parserMain(fileName: string) { //======================================
             // Open Tag
             case ("<"):
                 // Counter
-                z = matchOpeningTags(htmlString, i)
-                // Counter Updated (if tag found) or Not Updated (tag not found)
-                i = z
+                i = matchOpeningTags(htmlString, i)
                 break;
 
             case "/":
-                z = matchClosingTags(htmlString, i)
-                i = z
+                i = matchClosingTags(htmlString, i)
                 break;
 
             case "\'":
-                checkApex()
+                apexCounter = checkString(apexCounter, quotationCounter)
                 break;
 
             case "\"":
-                checkQuotation()
+                quotationCounter = checkString(quotationCounter, apexCounter)
                 break;
 
             case "-":
-                z = checkClosingComment(htmlString, i)
-                i = z
+                i = checkClosingComment(htmlString, i)
                 break;
         }
-        i++
+        i++;
     }
     const parseProps = propExtract.extractParseProp(parseSubstrings)
     const results = propExtract.resultMaker(parseProps, parseSubstrings, parseIndexCouples)
@@ -182,32 +177,21 @@ function matchClosingTags(htmlString: string, counter: number): number { //=====
 
 
 
-function checkApex(): void { //=========================================================================================
-    if (apexCounter === 0 && quotationCounter === 0) {
-        apexCounter++
+function checkString(external: number, internal: number) { //=========================================================================================
+    if (external === 0 && internal === 0) {
+        external++
         inString = true
-    } else if (apexCounter !== 0 && quotationCounter === 0) {
-        apexCounter--
+    } else if (external !== 0 && internal === 0) {
+        external--
         inString = false
-    } else if (apexCounter !== 0 && quotationCounter !== 0) {
-        apexCounter--
+    } else if (external !== 0 && internal !== 0) {
+        external--
     }
+    return external
 }
 //======================================================================================================================
 
 
-function checkQuotation() { //==========================================================================================
-    if (quotationCounter === 0 && apexCounter === 0) {
-        quotationCounter++
-        inString = true
-    } else if (quotationCounter !== 0 && apexCounter === 0) {
-        quotationCounter--
-        inString = false
-    } else if (quotationCounter !== 0 && apexCounter !== 0) {
-        quotationCounter--
-    }
-}
-//======================================================================================================================
 
 function checkClosingComment(text: string, counter: number): number { //========================================================================
     if (text.substring(counter, counter + 3) === "-->") {
@@ -233,9 +217,6 @@ function openHtmlFile(filename: string): string {
     return ''
 }
 //======================================================================================================================
-
-
-
 
 
 // the case where script have a nested style tag is not verified, is it valid html?
