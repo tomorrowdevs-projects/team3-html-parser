@@ -1,5 +1,5 @@
 
-const parser = require("./parser/parser_v2");
+const parser = require("./parser_v2");
 
 // Source file path
 const fileName = './files/test.html';
