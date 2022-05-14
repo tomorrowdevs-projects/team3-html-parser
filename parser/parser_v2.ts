@@ -1,5 +1,6 @@
 const fs = require('fs');
-const propExtract = require("./../parser/prop_extract");
+// To FIX
+const propExtract = require("./../../parser/prop_extract");
 
 // Status checkers =====================================================================================================
 
@@ -54,7 +55,7 @@ function parser_V2(fileName: string) { //=======================================
 
     while (i < htmlString.length) {
 
-        // If true we can parse 
+        // If true we can parse
         canParse = !(inHtmlComment || inString || inInvalidTag)
 
         switch (htmlString[i]) {
