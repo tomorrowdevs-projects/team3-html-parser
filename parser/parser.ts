@@ -45,9 +45,19 @@ let quotationCounter: number = 0;
 
 function parserMain(fileName: string) {
   //=====================================================================================
-
+  let htmlString = '';
   // OPEN FILE
-  const htmlString = openHtmlFile(fileName);
+  if (fs.existsSync(fileName)) {
+    htmlString = fs.readFileSync(fileName).toString();
+  } else {
+    return [
+      { raw: 'Invalid Filename',
+        properties: [],
+        from: [],
+        to: [],
+      }]
+
+  }
 
   let i = 0;
 
@@ -60,6 +70,14 @@ function parserMain(fileName: string) {
       case "<":
         // Counter
         i = matchOpeningTags(htmlString, i);
+        if (i === -1) {
+          return [
+            { raw: 'Invalid Parse Comment',
+              properties: [],
+              from: [],
+              to: [],
+            }]
+        }
         break;
 
       case "/":
@@ -81,67 +99,65 @@ function parserMain(fileName: string) {
     i++;
   }
   const parseProps = propExtract.extractParseProp(parseSubstrings);
-  const results = propExtract.resultMaker(
+  return propExtract.resultMaker(
     parseProps,
     parseSubstrings,
     parseIndexCouples
   );
-  console.dir(results, {
-    depth: 5,
-  });
 }
 //======================================================================================================================
+
 
 function matchOpeningTags(htmlString: string, counter: number): number {
   //===========================================================================
 
-  // Tag PARSE
-  if (
-    htmlString.substring(counter, counter + 6) === "<parse" &&
-    canParse &&
-    !inString
-  ) {
-    if (!inParse) {
-      inParse = true;
-      selfClosing = true;
+    // Tag PARSE
+    if (
+        htmlString.substring(counter, counter + 6) === "<parse" &&
+        canParse &&
+        !inString
+    ) {
+      if (!inParse) {
+        inParse = true;
+        selfClosing = true;
+      }
+      openParseIndex.push(counter);
+      return counter + 5;
     }
-    openParseIndex.push(counter);
-    return counter + 5;
-  }
-  // Tag STYLE
-  else if (
-    htmlString.substring(counter, counter + 6) === "<style" &&
-    !inString
-  ) {
-    inInvalidTag = true;
-    return counter + 5;
-  }
-  // Tag SCRIPT
-  else if (
-    htmlString.substring(counter, counter + 7) === "<script" &&
-    !inString
-  ) {
-    inInvalidTag = true;
-    return counter + 6;
-  }
-  // COMMENT
-  else if (htmlString.substring(counter, counter + 4) === "<!--") {
-    if (htmlString[counter + 4] === "#") {
-      inParseComment = true;
-      return counter + 4;
-    } else {
-      inHtmlComment = true;
-      return counter + 3;
+    // Tag STYLE
+    else if (
+        htmlString.substring(counter, counter + 6) === "<style" &&
+        !inString
+    ) {
+      inInvalidTag = true;
+      return counter + 5;
     }
-  }
-  // INVALID TAG IN PARSE COMMENT
-  else if (inParseComment && !inParse) {
-    throw new Error("Invalid parse comment!");
-  }
-  // No Tag found
-  else {
-    return counter;
-  }
+    // Tag SCRIPT
+    else if (
+        htmlString.substring(counter, counter + 7) === "<script" &&
+        !inString
+    ) {
+      inInvalidTag = true;
+      return counter + 6;
+    }
+    // COMMENT
+    else if (htmlString.substring(counter, counter + 4) === "<!--") {
+      if (htmlString[counter + 4] === "#") {
+        inParseComment = true;
+        return counter + 4;
+      } else {
+        inHtmlComment = true;
+        return counter + 3;
+      }
+    }
+    // INVALID TAG IN PARSE COMMENT
+    else if (inParseComment && !inParse) {
+      return -1
+    }
+    // No Tag found
+    else {
+      return counter;
+    }
 }
 //==========================================================================================================================================================================
 
@@ -230,16 +246,6 @@ function checkClosingComment(text: string, counter: number): number {
 }
 //======================================================================================================================
 
-// This function reads an html file and returns its contents ===========================================================
-function openHtmlFile(filename: string): string {
-  try {
-    return fs.readFileSync(filename).toString();
-  } catch (error: any) {
-    console.error(`Got an error trying to read the file: ${error.message}`);
-  }
-  return "";
-}
-//======================================================================================================================
 
 // the case where script have a nested style tag is not verified, is it valid html?
 
@@ -248,5 +254,5 @@ module.exports = {
   matchOpeningTags,
   matchClosingTags,
   checkClosingComment,
-  checkString,
+  checkString
 };

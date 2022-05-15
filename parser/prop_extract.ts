@@ -36,7 +36,6 @@ function extractParseProp(parseSubstrings: string[]) {
       propertiesArr.push(propertiesObject);
     }
   });
-
   return propertiesArr;
 }
 //======================================================================================================================
@@ -59,7 +58,6 @@ function resultMaker(
       to: parseIndexCouples[i][1],
     });
   }
-
   return results;
 }
 //======================================================================================================================
