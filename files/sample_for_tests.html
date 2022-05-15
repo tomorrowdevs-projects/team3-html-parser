@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      .style {
+        background-image: url('<div><script><parse property="foo"> </parse>');
+      }
+    </style>
+    <script>
+      const url = '<parse property="foo" />';
+    </script>
+    <meta charset="UTF-8" />
+    <parse foo="bar">
+      <div>
+        <parse baz="hey"></parse>
+      </div>
+      <div>
+        <parse baz="hoy"></parse>
+      </div>
+    </parse>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>HTML 5 Boilerplate</title>
+    <!-- <parse property="stylesheet" href="styles.css"></parse><div> error </div>> -->
+    <!-- <parse propertycomment="stylesheet" href="styles.css"></parse> -->
+    <parse property="stylesheet" href="styles.css"></parse>
+    <parse foo="bar"/>
+  <body>
+    <parse foo="bar"/>
+    <script src="index.js"></script>
+  </body>
+</html>
