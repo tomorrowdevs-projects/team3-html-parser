@@ -2,14 +2,6 @@ const parserTest = require("./parser");
 const propExtractTest = require("./prop_extract");
 
 
-test("Tests openHtmlFile Function", () =>  {
-  //====================================================================================================================
-  const errorMessage ='--->total execution time:0.';
-});
-//======================================================================================================================
-
-
-
 test("Tests ParserMain Function", () => {
   //====================================================================================================================
   const fileName = './files/sample_for_tests.html';
@@ -48,6 +40,9 @@ test("Tests ParserMain Function", () => {
         }
       ]
   );
+  const fileNameError = 'Error';
+  expect(parserTest.parserMain(fileNameError))
+      .toStrictEqual([{ raw: 'Invalid Filename', properties: [], from: [], to: [] }])
 });
 //======================================================================================================================
 
