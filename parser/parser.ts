@@ -86,9 +86,7 @@ function parserMain(fileName: string) {
     parseSubstrings,
     parseIndexCouples
   );
-  console.dir(results, {
-    depth: 5,
-  });
+  return results
 }
 //======================================================================================================================
 
@@ -249,4 +247,5 @@ module.exports = {
   matchClosingTags,
   checkClosingComment,
   checkString,
+  openHtmlFile
 };

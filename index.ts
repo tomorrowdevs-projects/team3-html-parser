@@ -5,4 +5,7 @@ const parser = require("./parser/parser");
 const fileName = './files/test.html';
 
 // Start the HTML parser
-parser.parserMain(fileName);
+console.dir(
+    parser.parserMain(fileName), {
+    depth: 5,
+});

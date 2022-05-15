@@ -1,6 +1,57 @@
 const parserTest = require("./parser");
 const propExtractTest = require("./prop_extract");
 
+
+test("Tests openHtmlFile Function", () =>  {
+  //====================================================================================================================
+  const errorMessage ='--->total execution time:0.';
+});
+//======================================================================================================================
+
+
+
+test("Tests ParserMain Function", () => {
+  //====================================================================================================================
+  const fileName = './files/sample_for_tests.html';
+  expect(parserTest.parserMain(fileName)).toStrictEqual(
+      [
+        {
+          raw: '<parse foo="bar">\r\n' +
+              '      <div>\r\n' +
+              '        <parse baz="hey"></parse>\r\n' +
+              '      </div>\r\n' +
+              '      <div>\r\n' +
+              '        <parse baz="hoy"></parse>\r\n' +
+              '      </div>\r\n' +
+              '    </parse>',
+          properties: { foo: 'bar' },
+          from: 287,
+          to: 441
+        },
+        {
+          raw: '<parse property="stylesheet" href="styles.css"></parse>',
+          properties: { property: 'stylesheet', href: 'styles.css' },
+          from: 792,
+          to: 846
+        },
+        {
+          raw: '<parse foo="bar"/>',
+          properties: { foo: 'bar' },
+          from: 853,
+          to: 870
+        },
+        {
+          raw: '<parse foo="bar"/>',
+          properties: { foo: 'bar' },
+          from: 887,
+          to: 904
+        }
+      ]
+  );
+});
+//======================================================================================================================
+
+
 test("Tests matchOpeningTags Function", () => {
   //====================================================================================================================
   expect(parserTest.matchOpeningTags("<parse ", 0)).toBe(5);
@@ -66,7 +117,10 @@ test("Tests extractParseProp Function", () => {
     { foo: 'bar' },
     { foo: 'bar' }
   ])
+  expect(propExtractTest.extractParseProp(["<parse></parse>"])).toStrictEqual([''])
+  expect(propExtractTest.extractParseProp(["<parse ></parse>"])).toStrictEqual([''])
 });
+
 
 test("Tests ResultMaker Function", () => {
   //====================================================================================================================
@@ -120,6 +174,9 @@ test("Tests ResultMaker Function", () => {
         }
       ]
   )
+  expect(propExtractTest.resultMaker([''], ['<parse></parse>'], [[ 0, 14 ]]))
+      .toStrictEqual([{ raw: '<parse></parse>', properties: [], from: 0, to: 14 }]
+      )
 });
 //======================================================================================================================
 
