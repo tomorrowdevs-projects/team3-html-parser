@@ -51,6 +51,11 @@ function resultMaker(
 
   // TODO: check if length of the 3 arrays is equal, otherwise something is missing
 
+  if (parseProps.length !== parseSubstrings.length && parseIndexCouples.length !== parseIndexCouples.length){
+    return console.error(`Error the arrays are not equal`);
+    
+  }
+
   for (let i = 0; i < parseSubstrings.length; i++) {
     results.push({
       raw: parseSubstrings[i],
