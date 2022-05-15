@@ -36,7 +36,6 @@ function extractParseProp(parseSubstrings: string[]) {
       propertiesArr.push(propertiesObject);
     }
   });
-
   return propertiesArr;
 }
 //======================================================================================================================
