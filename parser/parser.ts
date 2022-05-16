@@ -48,7 +48,7 @@ function parserMain(fileName: string) {
   let htmlString = "";
   // OPEN FILE
   if (fs.existsSync(fileName)) {
-    htmlString = fs.readFileSync(fileName, { encoding: "utf8" }).toString();
+    htmlString = fs.readFileSync(fileName).toString().replace(/\r\n/gm, "\n");
   } else {
     return [{ raw: "Invalid Filename", properties: [], from: [], to: [] }];
   }
