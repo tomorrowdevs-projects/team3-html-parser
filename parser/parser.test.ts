@@ -9,13 +9,13 @@ test("Tests ParserMain Function", () => {
       [
         {
           raw: '<parse foo="bar">\r\n' +
-               '            <div>\r\n' +
-               '                <parse baz="hey"></parse>\r\n' +
-               '            </div>\r\n' +
-               '            <div>\r\n' +
-               '                <parse baz="hoy"></parse>\r\n' +
-               '            </div>\r\n' +
-               '        </parse>',
+              '            <div>\r\n' +
+              '                <parse baz="hey"></parse>\r\n' +
+              '            </div>\r\n' +
+              '            <div>\r\n' +
+              '                <parse baz="hoy"></parse>\r\n' +
+              '            </div>\r\n' +
+              '        </parse>',
           properties: { foo: 'bar' },
           from: 364,
           to: 562
