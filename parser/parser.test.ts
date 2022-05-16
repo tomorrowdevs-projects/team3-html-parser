@@ -1,51 +1,49 @@
 const parserTest = require("./parser");
 const propExtractTest = require("./prop_extract");
 
-
 test("Tests ParserMain Function", () => {
   //====================================================================================================================
-  const fileName = './files/sample_for_tests.html';
-  expect(parserTest.parserMain(fileName)).toEqual(
-      [
-        {
-          raw: '<parse foo="bar">\r\n' +
-              '            <div>\r\n' +
-              '                <parse baz="hey"></parse>\r\n' +
-              '            </div>\r\n' +
-              '            <div>\r\n' +
-              '                <parse baz="hoy"></parse>\r\n' +
-              '            </div>\r\n' +
-              '        </parse>',
-          properties: { foo: 'bar' },
-          from: 364,
-          to: 562
-        },
-        {
-          raw: '<parse property="stylesheet" href="styles.css"></parse>',
-          properties: { property: 'stylesheet', href: 'styles.css' },
-          from: 937,
-          to: 991
-        },
-        {
-          raw: '<parse foo="bar"/>',
-          properties: { foo: 'bar' },
-          from: 1002,
-          to: 1019
-        },
-        {
-          raw: '<parse foo="bar"/>',
-          properties: { foo: 'bar' },
-          from: 1030,
-          to: 1047
-        }
-      ]
-  );
-  const fileNameError = 'Error';
-  expect(parserTest.parserMain(fileNameError))
-      .toStrictEqual([{ raw: 'Invalid Filename', properties: [], from: [], to: [] }])
+  const fileName = "./files/sample_for_tests.html";
+  expect(parserTest.parserMain(fileName)).toStrictEqual([
+    {
+      raw:
+        '<parse foo="bar">\n' +
+        "            <div>\n" +
+        '                <parse baz="hey"></parse>\n' +
+        "            </div>\n" +
+        "            <div>\n" +
+        '                <parse baz="hoy"></parse>\n' +
+        "            </div>\n" +
+        "        </parse>",
+      properties: { foo: "bar" },
+      from: 350, //350
+      to: 541,
+    },
+    {
+      raw: '<parse property="stylesheet" href="styles.css"></parse>',
+      properties: { property: "stylesheet", href: "styles.css" },
+      from: 910,
+      to: 964,
+    },
+    {
+      raw: '<parse foo="bar"/>',
+      properties: { foo: "bar" },
+      from: 974,
+      to: 991,
+    },
+    {
+      raw: '<parse foo="bar"/>',
+      properties: { foo: "bar" },
+      from: 1001,
+      to: 1018,
+    },
+  ]);
+  const fileNameError = "Error";
+  expect(parserTest.parserMain(fileNameError)).toStrictEqual([
+    { raw: "Invalid Filename", properties: [], from: [], to: [] },
+  ]);
 });
 //======================================================================================================================
-
 
 test("Tests matchOpeningTags Function", () => {
   //====================================================================================================================
@@ -89,89 +87,102 @@ test("Tests checkString Function", () => {
 });
 //======================================================================================================================
 
-
 test("Tests extractParseProp Function", () => {
   //====================================================================================================================
   const parseSubstrings = [
     '<parse foo="bar">\r\n' +
-    '      <div>\r\n' +
-    '        <parse baz="hey"></parse>\r\n' +
-    '      </div>\r\n' +
-    '      <div>\r\n' +
-    '        <parse baz="hoy"></parse>\r\n' +
-    '      </div>\r\n' +
-    '    </parse>',
+      "      <div>\r\n" +
+      '        <parse baz="hey"></parse>\r\n' +
+      "      </div>\r\n" +
+      "      <div>\r\n" +
+      '        <parse baz="hoy"></parse>\r\n' +
+      "      </div>\r\n" +
+      "    </parse>",
     '<parse property="stylesheet" href="styles.css"></parse>',
     '<parse foo="bar"/>',
-    '<parse foo="bar"/>'
-  ]
-  expect(propExtractTest.extractParseProp(parseSubstrings)).toStrictEqual(
-  [
-    { foo: 'bar' },
-    { property: 'stylesheet', href: 'styles.css' },
-    { foo: 'bar' },
-    { foo: 'bar' }
-  ])
-  expect(propExtractTest.extractParseProp(["<parse></parse>"])).toStrictEqual([''])
-  expect(propExtractTest.extractParseProp(["<parse ></parse>"])).toStrictEqual([''])
+    '<parse foo="bar"/>',
+  ];
+  expect(propExtractTest.extractParseProp(parseSubstrings)).toStrictEqual([
+    { foo: "bar" },
+    { property: "stylesheet", href: "styles.css" },
+    { foo: "bar" },
+    { foo: "bar" },
+  ]);
+  expect(propExtractTest.extractParseProp(["<parse></parse>"])).toStrictEqual([
+    "",
+  ]);
+  expect(propExtractTest.extractParseProp(["<parse ></parse>"])).toStrictEqual([
+    "",
+  ]);
 });
-
 
 test("Tests ResultMaker Function", () => {
   //====================================================================================================================
-  const parseProps =  [{ foo: 'bar' },{ property: 'stylesheet', href: 'styles.css' }, { foo: 'bar' }, { foo: 'bar' }]
+  const parseProps = [
+    { foo: "bar" },
+    { property: "stylesheet", href: "styles.css" },
+    { foo: "bar" },
+    { foo: "bar" },
+  ];
   const parseSubstrings = [
     '<parse foo="bar">\r\n' +
-    '      <div>\r\n' +
-    '        <parse baz="hey"></parse>\r\n' +
-    '      </div>\r\n' +
-    '      <div>\r\n' +
-    '        <parse baz="hoy"></parse>\r\n' +
-    '      </div>\r\n' +
-    '    </parse>',
+      "      <div>\r\n" +
+      '        <parse baz="hey"></parse>\r\n' +
+      "      </div>\r\n" +
+      "      <div>\r\n" +
+      '        <parse baz="hoy"></parse>\r\n' +
+      "      </div>\r\n" +
+      "    </parse>",
     '<parse property="stylesheet" href="styles.css"></parse>',
     '<parse foo="bar"/>',
-    '<parse foo="bar"/>'
-  ]
-  const parseIndexCouples = [ [ 287, 441 ], [ 792, 846 ], [ 853, 870 ], [ 887, 904 ] ]
-  expect(propExtractTest.resultMaker(parseProps, parseSubstrings, parseIndexCouples)).toStrictEqual(
-      [
-        {
-          raw: '<parse foo="bar">\r\n' +
-              '      <div>\r\n' +
-              '        <parse baz="hey"></parse>\r\n' +
-              '      </div>\r\n' +
-              '      <div>\r\n' +
-              '        <parse baz="hoy"></parse>\r\n' +
-              '      </div>\r\n' +
-              '    </parse>',
-          properties: { foo: 'bar' },
-          from: 287,
-          to: 441
-        },
-        {
-          raw: '<parse property="stylesheet" href="styles.css"></parse>',
-          properties: { property: 'stylesheet', href: 'styles.css' },
-          from: 792,
-          to: 846
-        },
-        {
-          raw: '<parse foo="bar"/>',
-          properties: { foo: 'bar' },
-          from: 853,
-          to: 870
-        },
-        {
-          raw: '<parse foo="bar"/>',
-          properties: { foo: 'bar' },
-          from: 887,
-          to: 904
-        }
-      ]
-  )
-  expect(propExtractTest.resultMaker([''], ['<parse></parse>'], [[ 0, 14 ]]))
-      .toStrictEqual([{ raw: '<parse></parse>', properties: [], from: 0, to: 14 }]
-      )
+    '<parse foo="bar"/>',
+  ];
+  const parseIndexCouples = [
+    [287, 441],
+    [792, 846],
+    [853, 870],
+    [887, 904],
+  ];
+  expect(
+    propExtractTest.resultMaker(parseProps, parseSubstrings, parseIndexCouples)
+  ).toStrictEqual([
+    {
+      raw:
+        '<parse foo="bar">\r\n' +
+        "      <div>\r\n" +
+        '        <parse baz="hey"></parse>\r\n' +
+        "      </div>\r\n" +
+        "      <div>\r\n" +
+        '        <parse baz="hoy"></parse>\r\n' +
+        "      </div>\r\n" +
+        "    </parse>",
+      properties: { foo: "bar" },
+      from: 287,
+      to: 441,
+    },
+    {
+      raw: '<parse property="stylesheet" href="styles.css"></parse>',
+      properties: { property: "stylesheet", href: "styles.css" },
+      from: 792,
+      to: 846,
+    },
+    {
+      raw: '<parse foo="bar"/>',
+      properties: { foo: "bar" },
+      from: 853,
+      to: 870,
+    },
+    {
+      raw: '<parse foo="bar"/>',
+      properties: { foo: "bar" },
+      from: 887,
+      to: 904,
+    },
+  ]);
+  expect(
+    propExtractTest.resultMaker([""], ["<parse></parse>"], [[0, 14]])
+  ).toStrictEqual([
+    { raw: "<parse></parse>", properties: [], from: 0, to: 14 },
+  ]);
 });
 //======================================================================================================================
-
