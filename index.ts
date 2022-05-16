@@ -2,7 +2,7 @@
 const parser = require("./parser/parser");
 
 // Source file path
-const fileName = './files/test.html';
+const fileName = './files/index.html';
 
 // Start the HTML parser
 console.dir(

@@ -6,14 +6,16 @@
 To **START** the project, type from the CLI:
 
 ```ruby
-node index.js
-```
-
-To **COMPILE THE TS FILE** of the project, type from the CLI:
-
-```
 node run dev
-
-it will create a directory "build" with the compilated files
 ```
-*Required **Node v16.6.1** or higher.*
+it will also create a directory "build" with the TS compiled files (JS files).
+
+To **START** the **TESTS SUITE** , type from the CLI:
+```ruby
+npm test
+```
+To also see the **TEST COVERAGE PERCENTAGE** , type from the CLI:
+```ruby
+npm test -- --coverage
+```
+*For the project is required **Node v16.6.1** or higher.*
