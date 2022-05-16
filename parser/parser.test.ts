@@ -5,7 +5,7 @@ const propExtractTest = require("./prop_extract");
 test("Tests ParserMain Function", () => {
   //====================================================================================================================
   const fileName = './files/sample_for_tests.html';
-  expect(parserTest.parserMain(fileName)).toStrictEqual(
+  expect(parserTest.parserMain(fileName)).toEqual(
       [
         {
           raw: '<parse foo="bar">\r\n' +
