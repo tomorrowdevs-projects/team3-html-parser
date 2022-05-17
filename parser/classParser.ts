@@ -13,7 +13,7 @@ class parserClass {
     }
 
     set htmlString(contet: string) {
-        this._htmlString = this._htmlString;
+        this._htmlString = contet;
     }
 
     private openFile(filename: string): string {
