@@ -3,79 +3,60 @@ const fs = require("fs");
 type pair = [number, number];
 
 export class Parser {
-    // Status checkers =====================================================================================================
-    // Bool used to check if we can Parse
-    private canParse: boolean = true;
 
-    // Bool to check if we are inside an invalid tag
-    private inInvalidTag: boolean = false;
+    // Status checkers
+    private canParse: boolean;                  // Bool used to check if we can Parse
+    private inInvalidTag: boolean;              // Bool to check if we are inside an invalid tag
+    private inString: boolean;                  // Bool to check if we are inside a string
+    private inHtmlComment: boolean;             // Bool to check if we are inside an html comment
+    private inParseComment: boolean;            // Bool to check if we are inside a parse comment ex: <!--#
+    private inParse: boolean;                   // In parse means that we have found a open parse tag and...
+                                                // ... we have to search the closing tag
 
-    // Bool to check if we are inside a string
-    private inString: boolean = false;
+    private parseSubstrings: string[];     // Array of parse substrings
+    private openParseIndex: number[];      // Array of the last valid open parse tag index found
+    private parseIndexCouples: pair[];     // Array where parse index couples will be stored
+    private propertiesArr: {}[];           // Array where properties/attributes of parse tags will be stored
+    private results: {}[];                  // Array where results will be stored as objects
+    private apexCounter: number;            // Counter for ' characters
+    private quotationCounter: number;       // Counter for " characters
+    private counter: number;
+    private htmlString: string;
+    //private fileName: string = "";
 
-    // Bool to check if we are inside an html comment
-    private inHtmlComment: boolean = false;
+    // OBJECT CONSTRUCTOR
+    constructor() {
+        this.canParse = true;
+        this.inInvalidTag = false;
+        this.inString = false;
+        this.inHtmlComment = false;
+        this.inParseComment = false;
+        this.inParse = false;
+        // this.parserMain(this.fileName);
+        this.parseSubstrings = [];
+        this.openParseIndex = [];
+        this.parseIndexCouples = [];     // Array where parse index couples will be stored
+        this.propertiesArr = [];           // Array where properties/attributes of parse tags will be stored
+        this.results = [];                  // Array where results will be stored as objects
+        this.apexCounter = 0;            // Counter for ' characters
+        this.quotationCounter = 0;       // Counter for " characters
+        this.counter = 0;
+        this.htmlString = "";
+        //this.fileName = "";
 
-    // Bool to check if we are inside a parse comment ex: <!--#
-    private inParseComment: boolean = false;
-
-    // In parse means that we have found a open parse tag and we have to search the closing tag
-    private inParse: boolean = false;
-
-    //======================================================================================================================
-
-    // Array of parse substrings
-    private parseSubstrings: string[] = [];
-
-    // Array of the last valid open parse tag index found
-    private openParseIndex: number[] = [];
-
-    // Array where parse index couples will be stored
-    private parseIndexCouples: pair[] = [];
-
-    // Array where properties/attributes of parse tags will be stored
-    private propertiesArr: {}[] = [];
-
-    // Array where results will be stored as objects
-    public results: {}[] = [];
-
-    // Counter for ' characters
-    private apexCounter: number = 0;
-
-    // Counter for " characters
-    private quotationCounter: number = 0;
-
-    private counter: number = 0;
-
-    private htmlString: string = "";
-
-    private fileName: string = "";
-
-    constructor(fileName: string) {
-        this.fileName = fileName;
-        this.parserMain(this.fileName);
     }
 
-    private parserMain(fileName: string) {
-        //=====================================================================================
+    private parserMain(fileName: string) { //===========================================================================
+
         // OPEN FILE
         if (fs.existsSync(fileName)) {
-            this.htmlString = fs
-                .readFileSync(fileName, { encoding: "utf8" })
-                .replace(/\r\n/gm, "\n");
-        } else {
-            return [
-                { raw: "Invalid Filename", properties: [], from: [], to: [] },
-            ];
+            const htmlString = fs.readFileSync(fileName, { encoding: "utf8" }).replace(/\r\n/gm, "\n");
         }
+        else return [{ raw: "Invalid Filename", properties: [], from: [], to: [] },];
 
         while (this.counter < this.htmlString.length) {
             // If true we can parse
-            this.canParse = !(
-                this.inHtmlComment ||
-                this.inString ||
-                this.inInvalidTag
-            );
+            this.canParse = !(this.inHtmlComment || this.inString || this.inInvalidTag);
 
             switch (this.htmlString[this.counter]) {
                 // Open Tag
