@@ -3,23 +3,24 @@
 const fs = require("fs");
 type pair = [number, number];
 
-export class Parser {  // START CLASS ==================================================================================
+export class Parser {
+    // START CLASS ==================================================================================
 
     // OBJECT Properties
-    private canParse: boolean;                      // Bool used to check if we can Parse
-    private inInvalidTag: boolean;                  // Bool to check if we are inside an invalid tag
-    private inString: boolean;                      // Bool to check if we are inside a string
-    private inHtmlComment: boolean;                 // Bool to check if we are inside an html comment
-    private inParseComment: boolean;                // Bool to check if we are inside a parse comment ex: <!--#
-    private inParse: boolean;                       // In parse means that we have found a open parse tag and...
-                                                    // ... we have to search the closing tag
-    private readonly parseSubstrings: string[];     // Array of parse substrings
-    private readonly openParseIndex: number[];      // Array of the last valid open parse tag index found
-    private readonly parseIndexCouples: pair[];     // Array where parse index couples will be stored
-    private readonly propertiesArr: {}[];           // Array where properties/attributes of parse tags will be stored
-    private results: {}[];                          // Array where results will be stored as objects
-    private apexCounter: number;                    // Counter for ' characters
-    private quotationCounter: number;               // Counter for " characters
+    private canParse: boolean; // Bool used to check if we can Parse
+    private inInvalidTag: boolean; // Bool to check if we are inside an invalid tag
+    private inString: boolean; // Bool to check if we are inside a string
+    private inHtmlComment: boolean; // Bool to check if we are inside an html comment
+    private inParseComment: boolean; // Bool to check if we are inside a parse comment ex: <!--#
+    private inParse: boolean; // In parse means that we have found a open parse tag and...
+    // ... we have to search the closing tag
+    private readonly parseSubstrings: string[]; // Array of parse substrings
+    private readonly openParseIndex: number[]; // Array of the last valid open parse tag index found
+    private readonly parseIndexCouples: pair[]; // Array where parse index couples will be stored
+    private readonly propertiesArr: {}[]; // Array where properties/attributes of parse tags will be stored
+    private results: {}[]; // Array where results will be stored as objects
+    private apexCounter: number; // Counter for ' characters
+    private quotationCounter: number; // Counter for " characters
     private counter: number;
     private htmlString: string;
 
@@ -31,7 +32,6 @@ export class Parser {  // START CLASS ==========================================
         this.inHtmlComment = false;
         this.inParseComment = false;
         this.inParse = false;
-        // this.parserMain(this.fileName);
         this.parseSubstrings = [];
         this.openParseIndex = [];
         this.parseIndexCouples = [];
@@ -43,14 +43,13 @@ export class Parser {  // START CLASS ==========================================
         this.htmlString = "";
     }
 
-    parserMain(fileName: string) { //===================================================================================
+    parserMain(fileName: string) {
+        //========================================================================
 
         // OPEN FILE
         if (fs.existsSync(fileName)) {
             this.htmlString = fs.readFileSync(fileName, { encoding: "utf8" }).replace(/\r\n/gm, "\n");
-        }
-        else return this.results = [{ raw: "Invalid Filename", properties: [], from: [], to: [] },];
-        console.log(this.htmlString)
+        } else return (this.results = [{ raw: "Invalid Filename", properties: [], from: [], to: [] }]);
 
         while (this.counter < this.htmlString.length) {
             // If true we can parse
@@ -62,13 +61,14 @@ export class Parser {  // START CLASS ==========================================
                     // Counter
                     this.matchOpeningTags();
                     if (this.counter === -1) {
-                        return [{
+                        return (this.results = [
+                            {
                                 raw: "Invalid Parse Comment",
                                 properties: [],
                                 from: [],
                                 to: [],
-                                },
-                        ];
+                            },
+                        ]);
                     }
                     break;
 
@@ -95,12 +95,11 @@ export class Parser {  // START CLASS ==========================================
     }
     //==================================================================================================================
 
-
-    private matchOpeningTags() {  //====================================================================================
+    private matchOpeningTags() {
+        //====================================================================================
 
         // Tag PARSE
-        if (
-            this.htmlString.substring(this.counter, this.counter + 6) === "<parse" && this.canParse && !this.inString) {
+        if (this.htmlString.substring(this.counter, this.counter + 6) === "<parse" && this.canParse && !this.inString) {
             if (!this.inParse) {
                 this.inParse = true;
             }
@@ -108,20 +107,17 @@ export class Parser {  // START CLASS ==========================================
             this.counter += 5;
         }
         // Tag STYLE
-        else if (
-            this.htmlString.substring(this.counter, this.counter + 6) === "<style" && !this.inString) {
+        else if (this.htmlString.substring(this.counter, this.counter + 6) === "<style" && !this.inString) {
             this.inInvalidTag = true;
             this.counter += 5;
         }
         // Tag SCRIPT
-        else if (
-            this.htmlString.substring(this.counter, this.counter + 7) === "<script" && !this.inString) {
+        else if (this.htmlString.substring(this.counter, this.counter + 7) === "<script" && !this.inString) {
             this.inInvalidTag = true;
             this.counter += 6;
         }
         // COMMENT
-        else if (
-            this.htmlString.substring(this.counter, this.counter + 4) === "<!--") {
+        else if (this.htmlString.substring(this.counter, this.counter + 4) === "<!--") {
             if (this.htmlString[this.counter + 4] === "#") {
                 this.inParseComment = true;
                 this.counter += 4;
@@ -132,24 +128,20 @@ export class Parser {  // START CLASS ==========================================
         }
         // INVALID TAG IN PARSE COMMENT
         else if (this.inParseComment && !this.inParse) {
-            return -1;
+            return (this.counter = -1);
         }
-        // No Tag found
-        // else {
-        //     this.counter;
-        // }
     }
     //==================================================================================================================
 
-
-    private matchClosingTags() {  //====================================================================================
+    private matchClosingTags() {
+        //=====================================================================================
 
         // Tag /PARSE
         if (this.htmlString.substring(this.counter, this.counter + 7) === "/parse>" && this.canParse && this.inParse) {
             if (this.openParseIndex.length === 1) {
                 this.inParse = false;
                 this.parseSubstrings.push(this.htmlString.substring(this.openParseIndex[0], this.counter + 7));
-                this.parseIndexCouples.push([this.openParseIndex[0],this.counter + 6]);
+                this.parseIndexCouples.push([this.openParseIndex[0], this.counter + 6]);
             }
             this.openParseIndex.pop();
             this.counter += 6;
@@ -165,54 +157,45 @@ export class Parser {  // START CLASS ==========================================
             this.counter += 7;
         }
         // SELF CLOSING TAG
-        if (
-            this.htmlString.substring(this.counter, this.counter + 2) === "/>" && this.canParse && this.inParse) {
+        if (this.htmlString.substring(this.counter, this.counter + 2) === "/>" && this.canParse && this.inParse) {
             if (this.openParseIndex.length === 1) {
                 this.inParse = false;
                 this.parseSubstrings.push(this.htmlString.substring(this.openParseIndex[0], this.counter + 2));
-                this.parseIndexCouples.push([this.openParseIndex[0], this.counter + 1,]);
+                this.parseIndexCouples.push([this.openParseIndex[0], this.counter + 1]);
             }
             this.openParseIndex.pop();
             this.counter += 1;
         }
-        // else {
-        //     this.counter;
-        //}
     }
     //==================================================================================================================
 
-
-    private checkString(external: number, internal: number) {  //=======================================================
+    private checkString(external: number, internal: number) {
+        //=======================================================
         if (external === 0 && internal === 0) {
             external++;
             this.inString = true;
-        }
-        else if (external !== 0 && internal === 0) {
+        } else if (external !== 0 && internal === 0) {
             external--;
             this.inString = false;
-        }
-        else if (external !== 0 && internal !== 0) {
+        } else if (external !== 0 && internal !== 0) {
             external--;
         }
         return external;
     }
     //==================================================================================================================
 
-
-    private checkClosingComment() {  //=================================================================================
+    private checkClosingComment() {
+        //=================================================================================
         if (this.htmlString.substring(this.counter, this.counter + 3) === "-->") {
             if (this.inHtmlComment && !this.inString) {
                 this.inHtmlComment = false;
-            }
-            else if (this.inParseComment && !this.inString) {
+            } else if (this.inParseComment && !this.inString) {
                 this.inParseComment = false;
             }
             this.counter += 2;
         }
-        //this.counter;
     }
     //==================================================================================================================
-
 
     /* Function to extract valid properties from parseSubstrings, will return an array of parseProps =============================
     with property names as keys and prop values as values */
@@ -232,8 +215,7 @@ export class Parser {  // START CLASS ==========================================
             if (cleanStr === "") {
                 // cleanStr = null;
                 this.propertiesArr.push(cleanStr);
-            }
-            else {
+            } else {
                 const propertiesObject: propertiesObjectType = {};
                 let match = regex.exec(cleanStr);
                 do {
@@ -254,7 +236,6 @@ export class Parser {  // START CLASS ==========================================
     }
     //==================================================================================================================
 
-
     // This function is used to populate the results array =================================================================
     private resultMaker() {
         if (
@@ -274,6 +255,5 @@ export class Parser {  // START CLASS ==========================================
         }
     }
     //==================================================================================================================
-
 }
 // END CLASS ===========================================================================================================
