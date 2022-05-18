@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "compile": "tsc",
-    "dev": "npm run compile && node build/index.js"
+    "dev": "npm run compile && node build/index_class.js"
   },
   "repository": {
     "type": "git",
