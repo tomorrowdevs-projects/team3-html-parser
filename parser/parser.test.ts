@@ -106,24 +106,37 @@ test("Tests ParserMain Method", () => {
 // });
 // //======================================================================================================================
 //
-// test("Tests checkClosingComment Function", () => {
-//   //====================================================================================================================
-//   expect(parserTest.checkClosingComment("-->", -5)).toBe(-5);
-//   expect(parserTest.checkClosingComment("", 0)).toBe(0);
-//   expect(parserTest.checkClosingComment("-->", 0)).toBe(2);
-// });
-// //======================================================================================================================
-//
-// test("Tests checkString Function", () => {
-//   //====================================================================================================================
-//   expect(parserTest.checkString(0, 0)).toBe(1);
-//   expect(parserTest.checkString(1, 0)).toBe(0);
-//   expect(parserTest.checkString(-1, 0)).toBe(-2);
-//   expect(parserTest.checkString(0, 1)).toBe(0);
-//   expect(parserTest.checkString(1, 1)).toBe(0);
-// });
-// //======================================================================================================================
-//
+test("Tests checkClosingComment Function", () => {
+  //====================================================================================================================
+  const parser = new Parser()
+  parser.inHtmlComment = false;
+  parser.inParseComment = true;
+  parser.inString = false;
+  parser.htmlString = '-->'
+  parser.checkClosingComment()
+  expect(parser.inParseComment).toBe(false)
+  // expect(parserTest.checkClosingComment("-->", -5)).toBe(-5);
+  // expect(parserTest.checkClosingComment("", 0)).toBe(0);
+  // expect(parserTest.checkClosingComment("-->", 0)).toBe(2);
+});
+//======================================================================================================================
+
+test("Tests checkString Function", () => {
+  //====================================================================================================================
+  const parser = new Parser()
+  parser.apexCounter = 1;
+  parser.quotationCounter = 1;
+  parser.apexCounter = parser.checkString(parser.apexCounter, parser.quotationCounter)
+  expect(parser.apexCounter).toBe(0)
+  expect(parser.quotationCounter).toBe(1)
+  // expect(parserTest.checkString(0, 0)).toBe(1);
+  // expect(parserTest.checkString(1, 0)).toBe(0);
+  // expect(parserTest.checkString(-1, 0)).toBe(-2);
+  // expect(parserTest.checkString(0, 1)).toBe(0);
+  // expect(parserTest.checkString(1, 1)).toBe(0);
+});
+//======================================================================================================================
+
 test("Tests extractParseProp Function", () => {
   //====================================================================================================================
   const parser = new Parser()

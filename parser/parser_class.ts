@@ -173,27 +173,30 @@ export class Parser {
     }
     //==================================================================================================================
 
-    private checkString(external: number, internal: number) {
+    checkString(external: number, internal: number) {
         //=======================================================
         if (external === 0 && internal === 0) {
-            external++;
+            external += 1;
             this.inString = true;
-        } else if (external !== 0 && internal === 0) {
-            external--;
+        }
+        else if (external !== 0 && internal === 0) {
+            external -= 1;
             this.inString = false;
-        } else if (external !== 0 && internal !== 0) {
-            external--;
+        }
+        else if (external !== 0 && internal !== 0) {
+            external -= 1;
         }
         return external;
     }
     //==================================================================================================================
 
-    private checkClosingComment() {
+    checkClosingComment() {
         //=================================================================================
         if (this.htmlString.substring(this.counter, this.counter + 3) === "-->") {
             if (this.inHtmlComment && !this.inString) {
                 this.inHtmlComment = false;
-            } else if (this.inParseComment && !this.inString) {
+            }
+            else if (this.inParseComment && !this.inString) {
                 this.inParseComment = false;
             }
             this.counter += 2;
