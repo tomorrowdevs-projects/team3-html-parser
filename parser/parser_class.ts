@@ -7,22 +7,22 @@ export class Parser {
     // START CLASS ==================================================================================
 
     // OBJECT Properties
-    private canParse: boolean; // Bool used to check if we can Parse
-    private inInvalidTag: boolean; // Bool to check if we are inside an invalid tag
-    private inString: boolean; // Bool to check if we are inside a string
-    private inHtmlComment: boolean; // Bool to check if we are inside an html comment
-    private inParseComment: boolean; // Bool to check if we are inside a parse comment ex: <!--#
-    private inParse: boolean; // In parse means that we have found a open parse tag and...
+    canParse: boolean; // Bool used to check if we can Parse
+    inInvalidTag: boolean; // Bool to check if we are inside an invalid tag
+    inString: boolean; // Bool to check if we are inside a string
+    inHtmlComment: boolean; // Bool to check if we are inside an html comment
+    inParseComment: boolean; // Bool to check if we are inside a parse comment ex: <!--#
+    inParse: boolean; // In parse means that we have found a open parse tag and...
     // ... we have to search the closing tag
-    private readonly parseSubstrings: string[]; // Array of parse substrings
-    private readonly openParseIndex: number[]; // Array of the last valid open parse tag index found
-    private readonly parseIndexCouples: pair[]; // Array where parse index couples will be stored
-    private readonly propertiesArr: {}[]; // Array where properties/attributes of parse tags will be stored
-    private results: {}[]; // Array where results will be stored as objects
-    private apexCounter: number; // Counter for ' characters
-    private quotationCounter: number; // Counter for " characters
-    private counter: number;
-    private htmlString: string;
+    parseSubstrings: string[]; // Array of parse substrings
+    readonly openParseIndex: number[]; // Array of the last valid open parse tag index found
+    parseIndexCouples: pair[]; // Array where parse index couples will be stored
+    propertiesArr: {}[]; // Array where properties/attributes of parse tags will be stored
+    results: {}[]; // Array where results will be stored as objects
+    apexCounter: number; // Counter for ' characters
+    quotationCounter: number; // Counter for " characters
+    counter: number;
+    htmlString: string;
 
     // OBJECT CONSTRUCTOR
     constructor() {
@@ -43,13 +43,17 @@ export class Parser {
         this.htmlString = "";
     }
 
-    parserMain(fileName: string) {
+    openHtmlFile (fileName: string) {
+        if (fs.existsSync(fileName)) this.htmlString = fs.readFileSync(fileName, { encoding: "utf8" }).replace(/\r\n/gm, "\n");
+        else this.results = [{ raw: "Invalid Filename", properties: [], from: [], to: [] }];
+    }
+
+
+    parserMain(htmlString?: string) {
         //========================================================================
 
-        // OPEN FILE
-        if (fs.existsSync(fileName)) {
-            this.htmlString = fs.readFileSync(fileName, { encoding: "utf8" }).replace(/\r\n/gm, "\n");
-        } else return (this.results = [{ raw: "Invalid Filename", properties: [], from: [], to: [] }]);
+        if (!this.htmlString && !htmlString) return this.results
+        else if (htmlString) this.htmlString = htmlString
 
         while (this.counter < this.htmlString.length) {
             // If true we can parse
@@ -169,27 +173,30 @@ export class Parser {
     }
     //==================================================================================================================
 
-    private checkString(external: number, internal: number) {
+    checkString(external: number, internal: number) {
         //=======================================================
         if (external === 0 && internal === 0) {
-            external++;
+            external += 1;
             this.inString = true;
-        } else if (external !== 0 && internal === 0) {
-            external--;
+        }
+        else if (external !== 0 && internal === 0) {
+            external -= 1;
             this.inString = false;
-        } else if (external !== 0 && internal !== 0) {
-            external--;
+        }
+        else if (external !== 0 && internal !== 0) {
+            external -= 1;
         }
         return external;
     }
     //==================================================================================================================
 
-    private checkClosingComment() {
+    checkClosingComment() {
         //=================================================================================
         if (this.htmlString.substring(this.counter, this.counter + 3) === "-->") {
             if (this.inHtmlComment && !this.inString) {
                 this.inHtmlComment = false;
-            } else if (this.inParseComment && !this.inString) {
+            }
+            else if (this.inParseComment && !this.inString) {
                 this.inParseComment = false;
             }
             this.counter += 2;
@@ -199,7 +206,7 @@ export class Parser {
 
     /* Function to extract valid properties from parseSubstrings, will return an array of parseProps =============================
     with property names as keys and prop values as values */
-    private extractParseProp() {
+    extractParseProp() {
         const regex = /(?<key>[a-zA-Z]+)=["](?<val>[^"]*)["]/gm;
 
         type propertiesObjectType = {
@@ -237,13 +244,11 @@ export class Parser {
     //==================================================================================================================
 
     // This function is used to populate the results array =================================================================
-    private resultMaker() {
-        if (
-            this.propertiesArr.length !== this.parseSubstrings.length &&
-            this.parseIndexCouples.length !== this.parseIndexCouples.length
-        ) {
-            return console.error(`Error the arrays are not equal`);
-        }
+    resultMaker() {
+        if (this.propertiesArr.length !== this.parseSubstrings.length ||
+            this.parseIndexCouples.length !== this.parseIndexCouples.length) {
+            return this.results = [{ raw: "Error during the parsing", properties: [], from: [], to: [] }];
+            }
 
         for (let i = 0; i < this.parseSubstrings.length; i++) {
             this.results.push({
@@ -255,5 +260,13 @@ export class Parser {
         }
     }
     //==================================================================================================================
+
+
+
+
+
+
+
+
 }
 // END CLASS ===========================================================================================================

@@ -5,9 +5,9 @@ name: Build Status
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main , main_class_version ]
   pull_request:
-    branches: [ main ]
+    branches: [ main , main_class_version ]
 
 jobs:
   build:
