@@ -22,52 +22,52 @@ test("Test OBJECT creation", () => {
 });
 //======================================================================================================================
 
-// test("Tests ParserMain Method", () => {
-//   //====================================================================================================================
-//   const fileName = "./files/sample_for_tests.html";
-//   parser.parserMain(fileName)
-//   expect(parser.results).toStrictEqual([
-//     {
-//       raw:
-//         '<parse foo="bar">\n' +
-//         "            <div>\n" +
-//         '                <parse baz="hey"></parse>\n' +
-//         "            </div>\n" +
-//         "            <div>\n" +
-//         '                <parse baz="hoy"></parse>\n' +
-//         "            </div>\n" +
-//         "        </parse>",
-//       properties: { foo: "bar" },
-//       from: 350, //350
-//       to: 541,
-//     },
-//     {
-//       raw: '<parse property="stylesheet" href="styles.css"></parse>',
-//       properties: { property: "stylesheet", href: "styles.css" },
-//       from: 910,
-//       to: 964,
-//     },
-//     {
-//       raw: '<parse foo="bar"/>',
-//       properties: { foo: "bar" },
-//       from: 974,
-//       to: 991,
-//     },
-//     {
-//       raw: '<parse foo="bar"/>',
-//       properties: { foo: "bar" },
-//       from: 1001,
-//       to: 1018,
-//     },
-//   ]);
-//   const fileNameError = "Error";
-//   parser.parserMain(fileNameError)
-//   expect(parser.results).toStrictEqual([
-//     { raw: "Invalid Filename", properties: [], from: [], to: [] },
-//   ]);
-// });
+test("Tests ParserMain Method", () => {
+  //====================================================================================================================
+  const fileName = "./files/sample_for_tests.html";
+  parser.parserMain(fileName)
+  expect(parser.results).toEqual([
+    {
+      raw:
+        '<parse foo="bar">\n' +
+        "            <div>\n" +
+        '                <parse baz="hey"></parse>\n' +
+        "            </div>\n" +
+        "            <div>\n" +
+        '                <parse baz="hoy"></parse>\n' +
+        "            </div>\n" +
+        "        </parse>",
+      properties: { foo: "bar" },
+      from: 350, //350
+      to: 541,
+    },
+    {
+      raw: '<parse property="stylesheet" href="styles.css"></parse>',
+      properties: { property: "stylesheet", href: "styles.css" },
+      from: 910,
+      to: 964,
+    },
+    {
+      raw: '<parse foo="bar" />',
+      properties: { foo: "bar" },
+      from: 974,
+      to: 992,
+    },
+    {
+      raw: '<parse foo="bar" />',
+      properties: { foo: "bar" },
+      from: 1002,
+      to: 1020,
+    },
+  ]);
+  const fileNameError = "Error";
+  parser.parserMain(fileNameError)
+  expect(parser.results).toStrictEqual([
+    { raw: "Invalid Filename", properties: [], from: [], to: [] },
+  ]);
+});
 //======================================================================================================================
-//
+
 // test("Tests matchOpeningTags Function", () => {
 //   //====================================================================================================================
 //   expect(parserTest.matchOpeningTags("<parse ", 0)).toBe(5);
