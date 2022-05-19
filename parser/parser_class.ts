@@ -7,22 +7,22 @@ export class Parser {
     // START CLASS ==================================================================================
 
     // OBJECT Properties
-    private canParse: boolean; // Bool used to check if we can Parse
-    private inInvalidTag: boolean; // Bool to check if we are inside an invalid tag
-    private inString: boolean; // Bool to check if we are inside a string
-    private inHtmlComment: boolean; // Bool to check if we are inside an html comment
-    private inParseComment: boolean; // Bool to check if we are inside a parse comment ex: <!--#
-    private inParse: boolean; // In parse means that we have found a open parse tag and...
+    canParse: boolean; // Bool used to check if we can Parse
+    inInvalidTag: boolean; // Bool to check if we are inside an invalid tag
+    inString: boolean; // Bool to check if we are inside a string
+    inHtmlComment: boolean; // Bool to check if we are inside an html comment
+    inParseComment: boolean; // Bool to check if we are inside a parse comment ex: <!--#
+    inParse: boolean; // In parse means that we have found a open parse tag and...
     // ... we have to search the closing tag
-    private readonly parseSubstrings: string[]; // Array of parse substrings
-    private readonly openParseIndex: number[]; // Array of the last valid open parse tag index found
-    private readonly parseIndexCouples: pair[]; // Array where parse index couples will be stored
-    private readonly propertiesArr: {}[]; // Array where properties/attributes of parse tags will be stored
-    private results: {}[]; // Array where results will be stored as objects
-    private apexCounter: number; // Counter for ' characters
-    private quotationCounter: number; // Counter for " characters
-    private counter: number;
-    private htmlString: string;
+    readonly parseSubstrings: string[]; // Array of parse substrings
+    readonly openParseIndex: number[]; // Array of the last valid open parse tag index found
+    readonly parseIndexCouples: pair[]; // Array where parse index couples will be stored
+    readonly propertiesArr: {}[]; // Array where properties/attributes of parse tags will be stored
+    results: {}[]; // Array where results will be stored as objects
+    apexCounter: number; // Counter for ' characters
+    quotationCounter: number; // Counter for " characters
+    counter: number;
+    htmlString: string;
 
     // OBJECT CONSTRUCTOR
     constructor() {

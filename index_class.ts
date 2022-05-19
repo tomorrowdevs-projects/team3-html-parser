@@ -1,4 +1,4 @@
-const { Parser } = require("./parser/parser_class");
+import {Parser} from "./parser/parser_class";
 
 const fileNameClass = "./files/index.html";
 
