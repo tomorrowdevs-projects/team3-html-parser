@@ -16,7 +16,7 @@ export class Parser {
     // ... we have to search the closing tag
     parseSubstrings: string[]; // Array of parse substrings
     readonly openParseIndex: number[]; // Array of the last valid open parse tag index found
-    readonly parseIndexCouples: pair[]; // Array where parse index couples will be stored
+    parseIndexCouples: pair[]; // Array where parse index couples will be stored
     propertiesArr: {}[]; // Array where properties/attributes of parse tags will be stored
     results: {}[]; // Array where results will be stored as objects
     apexCounter: number; // Counter for ' characters
@@ -237,7 +237,7 @@ export class Parser {
     //==================================================================================================================
 
     // This function is used to populate the results array =================================================================
-    private resultMaker() {
+    resultMaker() {
         if (
             this.propertiesArr.length !== this.parseSubstrings.length &&
             this.parseIndexCouples.length !== this.parseIndexCouples.length
