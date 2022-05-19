@@ -24,9 +24,10 @@ test("Test OBJECT creation", () => {
 
 test("Tests ParserMain Method", () => {
   //====================================================================================================================
-  const parser = new Parser()
+  let parser = new Parser()
   const fileName = "./files/sample_for_tests.html";
-  parser.parserMain(fileName)
+  parser.openHtmlFile(fileName)
+  parser.parserMain()
   expect(parser.results).toStrictEqual([
     {
       raw:
@@ -61,11 +62,23 @@ test("Tests ParserMain Method", () => {
       to: 1020,
     },
   ]);
+  parser = new Parser()
   const fileNameError = "Error";
-  parser.parserMain(fileNameError)
+  parser.openHtmlFile(fileNameError)
+  parser.parserMain()
   expect(parser.results).toStrictEqual([
     { raw: "Invalid Filename", properties: [], from: [], to: [] },
   ]);
+  parser = new Parser()
+  parser.htmlString = '<!--# <parse property="stylesheet" href="styles.css"></parse><div> error </div>> -->'
+  parser.parserMain(parser.htmlString)
+  expect(parser.results).toStrictEqual([
+    { raw: "Invalid Parse Comment", properties: [], from: [], to: [] },
+  ]);
+
+
+
+
 });
 //======================================================================================================================
 
@@ -216,6 +229,14 @@ test("Tests ResultMaker Function", () => {
         from: 0,
         to: 14
       },
+  ]);
+  parser = new Parser()
+  parser.propertiesArr = ["",""]
+  parser.parseSubstrings = ["<parse></parse>"]
+  parser.parseIndexCouples = [[0, 14]]
+  parser.resultMaker()
+  expect(parser.results).toStrictEqual([
+    { raw: "Error during the parsing", properties: [], from: [], to: [] }
   ]);
 });
 //======================================================================================================================

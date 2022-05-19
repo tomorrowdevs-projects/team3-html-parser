@@ -43,13 +43,17 @@ export class Parser {
         this.htmlString = "";
     }
 
-    parserMain(fileName: string) {
+    openHtmlFile (fileName: string) {
+        if (fs.existsSync(fileName)) this.htmlString = fs.readFileSync(fileName, { encoding: "utf8" }).replace(/\r\n/gm, "\n");
+        else this.results = [{ raw: "Invalid Filename", properties: [], from: [], to: [] }];
+    }
+
+
+    parserMain(htmlString?: string) {
         //========================================================================
 
-        // OPEN FILE
-        if (fs.existsSync(fileName)) {
-            this.htmlString = fs.readFileSync(fileName, { encoding: "utf8" }).replace(/\r\n/gm, "\n");
-        } else return (this.results = [{ raw: "Invalid Filename", properties: [], from: [], to: [] }]);
+        if (!this.htmlString && !htmlString) return this.results
+        else if (htmlString) this.htmlString = htmlString
 
         while (this.counter < this.htmlString.length) {
             // If true we can parse
@@ -238,12 +242,10 @@ export class Parser {
 
     // This function is used to populate the results array =================================================================
     resultMaker() {
-        if (
-            this.propertiesArr.length !== this.parseSubstrings.length &&
-            this.parseIndexCouples.length !== this.parseIndexCouples.length
-        ) {
-            return console.error(`Error the arrays are not equal`);
-        }
+        if (this.propertiesArr.length !== this.parseSubstrings.length ||
+            this.parseIndexCouples.length !== this.parseIndexCouples.length) {
+            return this.results = [{ raw: "Error during the parsing", properties: [], from: [], to: [] }];
+            }
 
         for (let i = 0; i < this.parseSubstrings.length; i++) {
             this.results.push({
@@ -255,5 +257,13 @@ export class Parser {
         }
     }
     //==================================================================================================================
+
+
+
+
+
+
+
+
 }
 // END CLASS ===========================================================================================================

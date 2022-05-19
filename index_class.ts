@@ -2,9 +2,10 @@ import {Parser} from "./parser/parser_class";
 
 const fileNameClass = "./files/index.html";
 
-const parser1 = new Parser();
-parser1.parserMain(fileNameClass);
+const parser = new Parser();
+parser.openHtmlFile(fileNameClass);
+parser.parserMain()
 // Start the HTML parser
-console.dir(parser1.results, {
+console.dir(parser.results, {
     depth: 5,
 });
