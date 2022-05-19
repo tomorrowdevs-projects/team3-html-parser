@@ -14,10 +14,10 @@ export class Parser {
     inParseComment: boolean; // Bool to check if we are inside a parse comment ex: <!--#
     inParse: boolean; // In parse means that we have found a open parse tag and...
     // ... we have to search the closing tag
-    readonly parseSubstrings: string[]; // Array of parse substrings
+    parseSubstrings: string[]; // Array of parse substrings
     readonly openParseIndex: number[]; // Array of the last valid open parse tag index found
     readonly parseIndexCouples: pair[]; // Array where parse index couples will be stored
-    readonly propertiesArr: {}[]; // Array where properties/attributes of parse tags will be stored
+    propertiesArr: {}[]; // Array where properties/attributes of parse tags will be stored
     results: {}[]; // Array where results will be stored as objects
     apexCounter: number; // Counter for ' characters
     quotationCounter: number; // Counter for " characters
@@ -199,7 +199,7 @@ export class Parser {
 
     /* Function to extract valid properties from parseSubstrings, will return an array of parseProps =============================
     with property names as keys and prop values as values */
-    private extractParseProp() {
+    extractParseProp() {
         const regex = /(?<key>[a-zA-Z]+)=["](?<val>[^"]*)["]/gm;
 
         type propertiesObjectType = {

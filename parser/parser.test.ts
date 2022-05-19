@@ -1,9 +1,9 @@
 import {Parser} from "./parser_class";
 
-const parser = new Parser()
 
 test("Test OBJECT creation", () => {
   //====================================================================================================================
+  const parser = new Parser()
   expect(parser.canParse).toBe(true);
   expect(parser.inInvalidTag).toBe(false);
   expect(parser.inString).toBe(false);
@@ -24,9 +24,10 @@ test("Test OBJECT creation", () => {
 
 test("Tests ParserMain Method", () => {
   //====================================================================================================================
+  const parser = new Parser()
   const fileName = "./files/sample_for_tests.html";
   parser.parserMain(fileName)
-  expect(parser.results).toEqual([
+  expect(parser.results).toStrictEqual([
     {
       raw:
         '<parse foo="bar">\n' +
@@ -79,8 +80,8 @@ test("Tests ParserMain Method", () => {
 //   expect(parserTest.matchOpeningTags("<!--", 0)).toBe(3);
 //   expect(parserTest.matchOpeningTags("<!--#", 0)).toBe(4);
 // });
-// //======================================================================================================================
-//
+//======================================================================================================================
+
 // test("Tests matchClosingTags Function", () => {
 //   //====================================================================================================================
 //   expect(parserTest.matchClosingTags("/parse> ", 0)).toBe(6);
@@ -110,34 +111,36 @@ test("Tests ParserMain Method", () => {
 // });
 // //======================================================================================================================
 //
-// test("Tests extractParseProp Function", () => {
-//   //====================================================================================================================
-//   const parseSubstrings = [
-//     '<parse foo="bar">\r\n' +
-//       "      <div>\r\n" +
-//       '        <parse baz="hey"></parse>\r\n' +
-//       "      </div>\r\n" +
-//       "      <div>\r\n" +
-//       '        <parse baz="hoy"></parse>\r\n' +
-//       "      </div>\r\n" +
-//       "    </parse>",
-//     '<parse property="stylesheet" href="styles.css"></parse>',
-//     '<parse foo="bar"/>',
-//     '<parse foo="bar"/>',
-//   ];
-//   expect(propExtractTest.extractParseProp(parseSubstrings)).toStrictEqual([
-//     { foo: "bar" },
-//     { property: "stylesheet", href: "styles.css" },
-//     { foo: "bar" },
-//     { foo: "bar" },
-//   ]);
-//   expect(propExtractTest.extractParseProp(["<parse></parse>"])).toStrictEqual([
-//     "",
-//   ]);
-//   expect(propExtractTest.extractParseProp(["<parse ></parse>"])).toStrictEqual([
-//     "",
-//   ]);
-// });
+test("Tests extractParseProp Function", () => {
+  //====================================================================================================================
+  const parser = new Parser()
+  parser.parseSubstrings = [
+    '<parse foo="bar">\r\n' +
+      "      <div>\r\n" +
+      '        <parse baz="hey"></parse>\r\n' +
+      "      </div>\r\n" +
+      "      <div>\r\n" +
+      '        <parse baz="hoy"></parse>\r\n' +
+      "      </div>\r\n" +
+      "    </parse>",
+    '<parse property="stylesheet" href="styles.css"></parse>',
+    '<parse foo="bar" />',
+    '<parse foo="bar" />',
+  ];
+  parser.extractParseProp()
+  expect(parser.propertiesArr).toStrictEqual([
+    { foo: "bar" },
+    { property: "stylesheet", href: "styles.css" },
+    { foo: "bar" },
+    { foo: "bar" },
+  ]);
+  parser.propertiesArr = [];
+  parser.parseSubstrings = ["<parse></parse>"]
+  parser.extractParseProp()
+  expect(parser.propertiesArr).toStrictEqual(["",]);
+});
+//======================================================================================================================
+
 //
 // test("Tests ResultMaker Function", () => {
 //   //====================================================================================================================
