@@ -236,13 +236,13 @@ export class Parser {
             this.propertiesArr.length !== this.parseSubstrings.length ||
             this.parseIndexCouples.length !== this.parseIndexCouples.length
         ) {
-            return (this.results = [{ raw: "Error during the parsing", properties: [], from: [], to: [] }]);
+            return (this.results = [{ raw: "Error during the parsing", properties: [], from: 0, to: 0 }]);
         }
 
         for (let i = 0; i < this.parseSubstrings.length; i++) {
             this.results.push({
                 raw: this.parseSubstrings[i],
-                properties: this.propertiesArr[i] ? this.propertiesArr[i] : [],
+                properties: [this.propertiesArr[i] ? this.propertiesArr[i] : []],
                 from: this.parseIndexCouples[i][0],
                 to: this.parseIndexCouples[i][1],
             });

@@ -38,25 +38,25 @@ test("Tests ParserMain Method", () => {
                 '                <parse baz="hoy"></parse>\n' +
                 "            </div>\n" +
                 "        </parse>",
-            properties: { foo: "bar" },
+            properties: [{ foo: "bar" }],
             from: 350, //350
             to: 541,
         },
         {
             raw: '<parse property="stylesheet" href="styles.css"></parse>',
-            properties: { property: "stylesheet", href: "styles.css" },
+            properties: [{ property: "stylesheet", href: "styles.css" }],
             from: 910,
             to: 964,
         },
         {
             raw: '<parse foo="bar" />',
-            properties: { foo: "bar" },
+            properties: [{ foo: "bar" }],
             from: 974,
             to: 992,
         },
         {
             raw: '<parse foo="bar" />',
-            properties: { foo: "bar" },
+            properties: [{ foo: "bar" }],
             from: 1002,
             to: 1020,
         },
@@ -106,25 +106,29 @@ test("Tests checkClosingComment Function", () => {
     parser.htmlString = "-->";
     parser.checkClosingComment();
     expect(parser.inParseComment).toBe(false);
-    // expect(parserTest.checkClosingComment("-->", -5)).toBe(-5);
-    // expect(parserTest.checkClosingComment("", 0)).toBe(0);
-    // expect(parserTest.checkClosingComment("-->", 0)).toBe(2);
 });
 //======================================================================================================================
 
 test("Tests checkString Function", () => {
     //====================================================================================================================
-    const parser = new Parser();
+    let parser = new Parser();
     parser.apexCounter = 1;
     parser.quotationCounter = 1;
     parser.apexCounter = parser.checkString(parser.apexCounter, parser.quotationCounter);
     expect(parser.apexCounter).toBe(0);
     expect(parser.quotationCounter).toBe(1);
-    // expect(parserTest.checkString(0, 0)).toBe(1);
-    // expect(parserTest.checkString(1, 0)).toBe(0);
-    // expect(parserTest.checkString(-1, 0)).toBe(-2);
-    // expect(parserTest.checkString(0, 1)).toBe(0);
-    // expect(parserTest.checkString(1, 1)).toBe(0);
+    parser = new Parser();
+    parser.apexCounter = 1;
+    parser.quotationCounter = 1;
+    parser.apexCounter = parser.checkString(parser.apexCounter, parser.quotationCounter);
+    expect(parser.apexCounter).toBe(0);
+    expect(parser.quotationCounter).toBe(1);
+    parser = new Parser();
+    parser.apexCounter = 0;
+    parser.quotationCounter = 0;
+    parser.quotationCounter = parser.checkString(parser.quotationCounter, parser.apexCounter);
+    expect(parser.apexCounter).toBe(0);
+    expect(parser.quotationCounter).toBe(1);
 });
 //======================================================================================================================
 
@@ -155,6 +159,10 @@ test("Tests extractParseProp Function", () => {
     parser.parseSubstrings = ["<parse></parse>"];
     parser.extractParseProp();
     expect(parser.propertiesArr).toStrictEqual([{}]);
+    parser.propertiesArr = [];
+    parser.parseSubstrings = ['<parse keyWithoutValue=""></parse>'];
+    parser.extractParseProp();
+    expect(parser.propertiesArr).toStrictEqual([{ keyWithoutValue: "" }]);
 });
 //======================================================================================================================
 
@@ -198,40 +206,40 @@ test("Tests ResultMaker Function", () => {
                 '        <parse baz="hoy"></parse>\r\n' +
                 "      </div>\r\n" +
                 "    </parse>",
-            properties: { foo: "bar" },
+            properties: [{ foo: "bar" }],
             from: 287,
             to: 441,
         },
         {
             raw: '<parse property="stylesheet" href="styles.css"></parse>',
-            properties: { property: "stylesheet", href: "styles.css" },
+            properties: [{ property: "stylesheet", href: "styles.css" }],
             from: 792,
             to: 846,
         },
         {
             raw: '<parse foo="bar"/>',
-            properties: { foo: "bar" },
+            properties: [{ foo: "bar" }],
             from: 853,
             to: 870,
         },
         {
             raw: '<parse foo="bar"/>',
-            properties: { foo: "bar" },
+            properties: [{ foo: "bar" }],
             from: 887,
             to: 904,
         },
     ]);
     parser = new Parser();
     parser.parseSubstrings = ["<parse></parse>"];
-    parser.propertiesArr = [""];
+    parser.propertiesArr = [{}];
     parser.parseIndexCouples = [[0, 14]];
     parser.resultMaker();
-    expect(parser.results).toStrictEqual([{ raw: "<parse></parse>", properties: [], from: 0, to: 14 }]);
+    expect(parser.results).toStrictEqual([{ raw: "<parse></parse>", properties: [{}], from: 0, to: 14 }]);
     parser = new Parser();
-    parser.propertiesArr = ["", ""];
+    parser.propertiesArr = [{}, {}];
     parser.parseSubstrings = ["<parse></parse>"];
     parser.parseIndexCouples = [[0, 14]];
     parser.resultMaker();
-    expect(parser.results).toStrictEqual([{ raw: "Error during the parsing", properties: [], from: [], to: [] }]);
+    expect(parser.results).toStrictEqual([{ raw: "Error during the parsing", properties: [], from: 0, to: 0 }]);
 });
 //======================================================================================================================
