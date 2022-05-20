@@ -43,17 +43,17 @@ export class Parser {
         this.htmlString = "";
     }
 
-    openHtmlFile (fileName: string) {
-        if (fs.existsSync(fileName)) this.htmlString = fs.readFileSync(fileName, { encoding: "utf8" }).replace(/\r\n/gm, "\n");
+    openHtmlFile(fileName: string) {
+        if (fs.existsSync(fileName))
+            this.htmlString = fs.readFileSync(fileName, { encoding: "utf8" }).replace(/\r\n/gm, "\n");
         else this.results = [{ raw: "Invalid Filename", properties: [], from: [], to: [] }];
     }
-
 
     parserMain(htmlString?: string) {
         //========================================================================
 
-        if (!this.htmlString && !htmlString) return this.results
-        else if (htmlString) this.htmlString = htmlString
+        if (!this.htmlString && !htmlString) return this.results;
+        else if (htmlString) this.htmlString = htmlString;
 
         while (this.counter < this.htmlString.length) {
             // If true we can parse
@@ -178,12 +178,10 @@ export class Parser {
         if (external === 0 && internal === 0) {
             external += 1;
             this.inString = true;
-        }
-        else if (external !== 0 && internal === 0) {
+        } else if (external !== 0 && internal === 0) {
             external -= 1;
             this.inString = false;
-        }
-        else if (external !== 0 && internal !== 0) {
+        } else if (external !== 0 && internal !== 0) {
             external -= 1;
         }
         return external;
@@ -195,8 +193,7 @@ export class Parser {
         if (this.htmlString.substring(this.counter, this.counter + 3) === "-->") {
             if (this.inHtmlComment && !this.inString) {
                 this.inHtmlComment = false;
-            }
-            else if (this.inParseComment && !this.inString) {
+            } else if (this.inParseComment && !this.inString) {
                 this.inParseComment = false;
             }
             this.counter += 2;
@@ -207,48 +204,40 @@ export class Parser {
     /* Function to extract valid properties from parseSubstrings, will return an array of parseProps =============================
     with property names as keys and prop values as values */
     extractParseProp() {
-        const regex = /(?<key>[a-zA-Z]+)=["](?<val>[^"]*)["]/gm;
+        const regex: RegExp = /(?<key>[a-zA-Z]+)=["](?<val>[^"]*)["]/gm;
 
         type propertiesObjectType = {
             [propertyName: string]: string | null;
         };
 
         this.parseSubstrings.forEach((str) => {
-            const start = str.indexOf("<parse ") + "<parse ".length;
-            const end = str.indexOf(">");
+            const start: number = str.indexOf("<parse ") + "<parse ".length;
+            const end: number = str.indexOf(">");
 
-            let cleanStr = str.substring(start, end);
+            let cleanStr: string = str.substring(start, end);
+            const propertiesObject: propertiesObjectType = {};
 
-            if (cleanStr === "") {
-                // cleanStr = null;
-                this.propertiesArr.push(cleanStr);
-            } else {
-                const propertiesObject: propertiesObjectType = {};
-                let match = regex.exec(cleanStr);
-                do {
-                    let propName: string = "";
-                    let propValue: string = "";
-                    if (match !== null && match.groups !== null) {
-                        if (match.groups !== undefined) {
-                            propName = match.groups.key;
-                            propValue = match.groups.val;
-                            propertiesObject[propName] = propValue;
-                        }
-                    }
-                } while ((match = regex.exec(cleanStr)) !== null);
-
-                this.propertiesArr.push(propertiesObject);
+            if (cleanStr !== "") {
+                let match: RegExpExecArray | null;
+                while ((match = regex.exec(cleanStr)) !== null && match.groups !== null && match.groups !== undefined) {
+                    let propName: string = match.groups.key;
+                    let propValue: string = match.groups.val;
+                    propertiesObject[propName] = propValue;
+                }
             }
+            this.propertiesArr.push(propertiesObject);
         });
     }
     //==================================================================================================================
 
     // This function is used to populate the results array =================================================================
     resultMaker() {
-        if (this.propertiesArr.length !== this.parseSubstrings.length ||
-            this.parseIndexCouples.length !== this.parseIndexCouples.length) {
-            return this.results = [{ raw: "Error during the parsing", properties: [], from: [], to: [] }];
-            }
+        if (
+            this.propertiesArr.length !== this.parseSubstrings.length ||
+            this.parseIndexCouples.length !== this.parseIndexCouples.length
+        ) {
+            return (this.results = [{ raw: "Error during the parsing", properties: [], from: [], to: [] }]);
+        }
 
         for (let i = 0; i < this.parseSubstrings.length; i++) {
             this.results.push({
@@ -260,13 +249,5 @@ export class Parser {
         }
     }
     //==================================================================================================================
-
-
-
-
-
-
-
-
 }
 // END CLASS ===========================================================================================================
