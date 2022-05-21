@@ -15,7 +15,7 @@ export class Parser {
     inParse: boolean; // In parse means that we have found a open parse tag and...
     // ... we have to search the closing tag
     parseSubstrings: string[]; // Array of parse substrings
-    readonly openParseIndex: number[]; // Array of the last valid open parse tag index found
+    openParseIndex: number[]; // Array of the last valid open parse tag index found
     parseIndexCouples: pair[]; // Array where parse index couples will be stored
     propertiesArr: {}[]; // Array where properties/attributes of parse tags will be stored
     results: {}[]; // Array where results will be stored as objects
@@ -99,7 +99,7 @@ export class Parser {
     }
     //==================================================================================================================
 
-    private matchOpeningTags() {
+    matchOpeningTags() {
         //====================================================================================
 
         // Tag PARSE
@@ -137,7 +137,7 @@ export class Parser {
     }
     //==================================================================================================================
 
-    private matchClosingTags() {
+    matchClosingTags() {
         //=====================================================================================
 
         // Tag /PARSE
@@ -240,9 +240,10 @@ export class Parser {
         }
 
         for (let i = 0; i < this.parseSubstrings.length; i++) {
+            const properties = [Object.keys(this.propertiesArr[i]).length !== 0 ? this.propertiesArr[i] : {}]
             this.results.push({
                 raw: this.parseSubstrings[i],
-                properties: [this.propertiesArr[i] ? this.propertiesArr[i] : []],
+                properties: properties,
                 from: this.parseIndexCouples[i][0],
                 to: this.parseIndexCouples[i][1],
             });
