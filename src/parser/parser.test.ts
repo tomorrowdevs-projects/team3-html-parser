@@ -1,7 +1,7 @@
 import { Parser } from "./parser_class";
 
+
 test("Test OBJECT creation", () => {
-    //====================================================================================================================
     const parser = new Parser();
     expect(parser.canParse).toBe(true);
     expect(parser.inInvalidTag).toBe(false);
@@ -19,10 +19,8 @@ test("Test OBJECT creation", () => {
     expect(parser.counter).toBe(0);
     expect(parser.htmlString).toBe("");
 });
-//======================================================================================================================
 
 test("Tests ParserMain Method", () => {
-    //====================================================================================================================
     let parser = new Parser();
     const fileName = "./files/sample_for_tests.html";
     parser.openHtmlFile(fileName);
@@ -71,54 +69,42 @@ test("Tests ParserMain Method", () => {
     parser.parserMain(parser.htmlString);
     expect(parser.results).toStrictEqual([{ raw: "Invalid Parse Comment", properties: [], from: [], to: [] }]);
 });
-//======================================================================================================================
 
-// test("Tests matchOpeningTags Function", () => {
-//   //====================================================================================================================
-//   expect(parserTest.matchOpeningTags("<parse ", 0)).toBe(5);
-//   expect(parserTest.matchOpeningTags("<parse ", -5)).toBe(-5);
-//   expect(parserTest.matchOpeningTags("<parse ", 1)).toBe(1);
-//   expect(parserTest.matchOpeningTags("", 0)).toBe(0);
-//   expect(parserTest.matchOpeningTags("<style", 0)).toBe(5);
-//   expect(parserTest.matchOpeningTags("<script", 0)).toBe(6);
-//   expect(parserTest.matchOpeningTags("<!--", 0)).toBe(3);
-//   expect(parserTest.matchOpeningTags("<!--#", 0)).toBe(4);
-// });
-//======================================================================================================================
+test("Tests matchOpeningTags Function", () => {
+    const parser = new Parser();
+    parser.canParse = true;
+    parser.inString = false;
+    parser.inParse = false;
+    parser.counter = 1;
+    parser.htmlString = ' <parse ';
+    parser.matchOpeningTags();
+    expect(parser.inParse).toBe(true);
+    expect(parser.counter).toBe(6);
+    expect(parser.openParseIndex).toStrictEqual([1]);
+});
 
 test("Tests matchClosingTags Function", () => {
-  //===================================================================================================================
     const parser = new Parser();
-    parser.canParse = true
-    parser.inParse = true
-    parser.openParseIndex = [0]
-    parser.htmlString = '/>'
-    parser.matchClosingTags()
-    expect(parser.inParse).toBe(false)
-//   expect(parserTest.matchClosingTags("/parse> ", 0)).toBe(6);
-//   expect(parserTest.matchClosingTags("/parse> ", -5)).toBe(-5);
-//   expect(parserTest.matchClosingTags("/parse> ", 1)).toBe(1);
-//   expect(parserTest.matchClosingTags("", 0)).toBe(0);
-//   expect(parserTest.matchClosingTags("/style>", 0)).toBe(6);
-//   expect(parserTest.matchClosingTags("/script>", 0)).toBe(7);
+    parser.canParse = true;
+    parser.inParse = true;
+    parser.openParseIndex = [0];
+    parser.htmlString = '/>';
+    parser.matchClosingTags();
+    expect(parser.inParse).toBe(false);
 });
-//======================================================================================================================
-//
+
 test("Tests checkClosingComment Function", () => {
-    //====================================================================================================================
     const parser = new Parser();
     parser.inHtmlComment = false;
     parser.inParseComment = true;
     parser.inString = false;
-    parser.counter = 0
+    parser.counter = 0;
     parser.htmlString = "-->";
     parser.checkClosingComment();
     expect(parser.inParseComment).toBe(false);
 });
-//======================================================================================================================
 
 test("Tests checkString Function", () => {
-    //====================================================================================================================
     const parser = new Parser();
     parser.apexCounter = 1;
     parser.quotationCounter = 1;
@@ -134,10 +120,8 @@ test("Tests checkString Function", () => {
     expect(parser.apexCounter).toBe(0);
     expect(parser.quotationCounter).toBe(1);
 });
-//======================================================================================================================
 
 test("Tests extractParseProp Function", () => {
-    //====================================================================================================================
     const parser = new Parser();
     parser.parseSubstrings = [
         '<parse foo="bar">\r\n' +
@@ -168,10 +152,8 @@ test("Tests extractParseProp Function", () => {
     parser.extractParseProp();
     expect(parser.propertiesArr).toStrictEqual([{ keyWithoutValue: "" }]);
 });
-//======================================================================================================================
 
 test("Tests ResultMaker Function", () => {
-    //====================================================================================================================
     let parser = new Parser();
     parser.propertiesArr = [
         { foo: "bar" },
@@ -246,4 +228,3 @@ test("Tests ResultMaker Function", () => {
     parser.resultMaker();
     expect(parser.results).toStrictEqual([{ raw: "Error during the parsing", properties: [], from: 0, to: 0 }]);
 });
-//======================================================================================================================
